@@ -375,7 +375,7 @@ The analyzer immediately outputs [11_change_impact_report.md](file:///C:/Users/j
 All framework components have been physically implemented on disk in the project directory:
 `C:\Users\jayad\.gemini\antigravity\scratch\adas_ad_agentic_framework\`
 
-### Automated Verification Results (9 of 9 Passed 100%)
+### Automated Verification Results (13 of 13 Passed 100%)
 ```text
 test_01_model_lock_configuration .............. PASS (Strict temp=0.0, seed=424242, no live web)
 test_02_all_agent_yaml_contracts_valid ........ PASS (11 of 11 Agent Contracts conform to schema)
@@ -386,8 +386,12 @@ test_06_icd_bandwidth_and_e2e_protection ...... PASS (TSN & CAN-FD within limits
 test_07_embedded_c_misra_and_safety_rules ..... PASS (MISRA-C: zero dynamic memory, zero recursion, E2E checks)
 test_08_execution_bundle_and_gatekeeper ....... PASS (Cryptographic bundle sealed & approved by gatekeeper)
 test_09_change_impact_ripple_analysis ......... PASS (Bi-directional SQLite graph traversal & stale flags)
+test_10_tree_sitter_ast_misra_linter .......... PASS (Tree-Sitter-C AST CST Parser & Call-Graph Recursion Check)
+test_11_scenariogeneration_xosc_builder ....... PASS (Official scenariogeneration OpenSCENARIO 1.2 + Kinematics)
+test_12_canfd_physical_protocol_framing ....... PASS (ISO 11898-1:2015 CAN-FD bit stuffing & physical overhead)
+test_13_agent_react_self_correction_loop ...... PASS (AgentReActExecutor PDCA cycle & Gatekeeper sealing)
 ----------------------------------------------------------------------
-Ran 9 tests in 0.224s -- OK (100% Pass Rate)
+Ran 13 tests in 2.049s -- OK (100% Pass Rate)
 ```
 
 ### Direct File Links to Framework Deliverables
