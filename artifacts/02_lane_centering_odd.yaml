@@ -19,7 +19,7 @@ odd_specification:
       min: 3.25
       max: 4.5
     curve_radius_m:
-      min: 250.0
+      min: 450.0
     geofence_exclusions:
     - CONSTRUCTION_ZONES_YELLOW_MARKINGS
     - TOLL_PLAZAS

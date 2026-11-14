@@ -133,5 +133,42 @@ class TestADASAgenticFramework(unittest.TestCase):
         self.assertGreater(res["stale_artifacts_count"], 0)
         self.assertTrue(report_path.exists())
 
+    def test_10_tree_sitter_ast_misra_linter(self):
+        """Verifies Tree-Sitter CST/AST parsing engine on C code safety."""
+        c_file = self.root / "artifacts/08_lane_controller.c"
+        res = lint_embedded_c_code(str(c_file))
+        self.assertEqual(res["status"], "PASS")
+        self.assertEqual(res["engine"], "Tree-Sitter-C AST (C11/ISO 26262 Parser)")
+        self.assertIn("LaneController_Step", res["functions_analyzed"])
+
+    def test_11_scenariogeneration_xosc_builder(self):
+        """Verifies official scenariogeneration OpenSCENARIO 1.2 XML generation."""
+        params_file = self.root / "artifacts/07_scenarios/scenario_params.json"
+        out_xosc = self.root / "artifacts/07_scenarios/cutin_glare.xosc"
+        with open(params_file, "r", encoding="utf-8") as f:
+            params = json.load(f)
+        from skills.xosc_builder import generate_openscenario
+        res = generate_openscenario(params, out_xosc)
+        self.assertEqual(res["status"], "PASS")
+        self.assertIn("scenariogeneration.xosc", res["engine"])
+
+    def test_12_canfd_physical_protocol_framing(self):
+        """Verifies ISO 11898-1:2015 CAN-FD framing and physical bit-rate overhead."""
+        from skills.bus_bandwidth_calc import calculate_canfd_frame_bits
+        frame = calculate_canfd_frame_bits(payload_bytes=8)
+        self.assertEqual(frame["raw_payload_bits"], 64)
+        self.assertGreater(frame["total_physical_bits"], 100) # Overhead + stuff bits
+
+    def test_13_agent_react_self_correction_loop(self):
+        """Verifies AgentReActExecutor PDCA cycle and automated gatekeeper sealing."""
+        from core.agent_executor import AgentReActExecutor
+        executor = AgentReActExecutor("AGENT_02_ODD_ARCHITECT", base_dir=str(self.root))
+        profile_p = self.root / "profiles/l3_highway_chauffeur.yaml"
+        with open(profile_p, "r", encoding="utf-8") as f:
+            prof = yaml.safe_load(f)
+        res = executor.run_pdca_cycle("FEAT-L3-HWY-CHAUFFEUR", prof)
+        self.assertEqual(res["status"], "PASS")
+        self.assertEqual(res["gatekeeper_verdict"]["gate_decision"], "PASS")
+
 if __name__ == "__main__":
     unittest.main()

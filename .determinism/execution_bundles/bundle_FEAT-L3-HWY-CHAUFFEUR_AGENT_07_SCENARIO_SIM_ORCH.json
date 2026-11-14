@@ -1,0 +1,26 @@
+{
+  "bundle_version": "1.0.0",
+  "feature_id": "FEAT-L3-HWY-CHAUFFEUR",
+  "agent_id": "AGENT_07_SCENARIO_SIM_ORCH",
+  "llm_lock": {
+    "checkpoint": "gemini-2.5-pro-002",
+    "temperature": 0.0,
+    "seed": 424242
+  },
+  "input_hashes": {
+    "artifacts/02_lane_centering_odd.yaml": "f0c56dd7de4ade6dba255506833a6500283e1fb3b466592243b2fa3867c8ef5b",
+    "artifacts/05_safety_analysis.csv": "123bb80c9aae041a72c3d2936d1e202a415a6d9315c17979463d5cc821671c9f"
+  },
+  "output_hashes": {
+    "artifacts/07_scenarios/cutin_glare.xosc": "2aca94e6dbce8e7d8f5c179ce80ad9e591fa7755e842fc2eef1a1c36ee7764f4",
+    "artifacts/07_simulation_plan.md": "d202b08ce64daaf207ddd290a4dbdb7ffc20c0de846ece24b47fd0527a8b804e"
+  },
+  "skills_invoked": [
+    "generate_openscenario"
+  ],
+  "compliance_attestation": {
+    "iso26262_traceability_enforced": true,
+    "iso21448_sotif_matrix_linked": true,
+    "human_signoff_status": "PENDING_HUMAN_SIGN_OFF"
+  }
+}
