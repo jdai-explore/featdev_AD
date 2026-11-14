@@ -1,0 +1,83 @@
+{
+  "graph_id": "KG4_HAZARD_SOTIF_CATALOG",
+  "version": "1.5.0",
+  "description": "Hazard, SOTIF Triggering Conditions and ISO/PAS 8800 AI Weaknesses Catalog.",
+  "functional_safety_hazards": [
+    {
+      "hazard_id": "HAZ_LAT_OVERFEED_01",
+      "malfunction": "Unintended excessive steering torque command during automated driving.",
+      "operational_scenario": "Vehicle cruising at 130 km/h on highway curve adjacent to guardrail.",
+      "severity": "S3",
+      "exposure": "E4",
+      "controllability": "C3",
+      "asil": "ASIL_D",
+      "safety_goal": "Prevent unintended lateral steering torque exceeding 3.0 Nm with FTTI <= 20ms.",
+      "ftti_ms": 20.0
+    },
+    {
+      "hazard_id": "HAZ_LAT_LOSS_02",
+      "malfunction": "Sudden unannounced loss of lane centering control during curve.",
+      "operational_scenario": "Vehicle navigating R=300m curve at 120 km/h without driver hands on wheel.",
+      "severity": "S3",
+      "exposure": "E4",
+      "controllability": "C3",
+      "asil": "ASIL_D",
+      "safety_goal": "Maintain lateral path tracking or execute graceful fail-operational takeover within 500ms.",
+      "ftti_ms": 50.0
+    },
+    {
+      "hazard_id": "HAZ_LONG_PHANTOM_BRAKE_03",
+      "malfunction": "False positive emergency braking command in open highway.",
+      "operational_scenario": "Vehicle cruising at 130 km/h with trailing 40-ton truck at 25m distance.",
+      "severity": "S3",
+      "exposure": "E3",
+      "controllability": "C3",
+      "asil": "ASIL_C",
+      "safety_goal": "Prevent deceleration exceeding 2.0 m/s2 in the absence of valid collision target.",
+      "ftti_ms": 100.0
+    }
+  ],
+  "sotif_triggering_conditions": [
+    {
+      "trigger_id": "SOT_TRIG_SUN_GLARE_01",
+      "category": "ATMOSPHERIC_ILLUMINATION",
+      "phenomenon": "Low sun elevation (< 5 deg) causing front camera sensor blooming.",
+      "functional_insufficiency": "Perception network fails to extract white dashed lane markings.",
+      "consequence": "Lateral lane drift unless radar/lidar fusion or map boundary holds trajectory.",
+      "quantitative_metric": "camera_confidence < 0.65 for duration > 300ms",
+      "simulation_test_mapping": "ASAM_SCENARIO_SUN_GLARE_CURVE"
+    },
+    {
+      "trigger_id": "SOT_TRIG_CONSTRUCTION_YELLOW_02",
+      "category": "INFRASTRUCTURE_MARKING",
+      "phenomenon": "Overlapping faded permanent white markings and temporary orange/yellow lines.",
+      "functional_insufficiency": "Neural network lane boundary tracker prioritizes incorrect line.",
+      "consequence": "Vehicle steers towards barrier or adjacent traffic.",
+      "quantitative_metric": "lane_curvature_disagreement_deg > 2.0",
+      "simulation_test_mapping": "ASAM_SCENARIO_CONSTRUCTION_SPLIT"
+    },
+    {
+      "trigger_id": "SOT_TRIG_TRUCK_SPRAY_03",
+      "category": "PRECIPITATION_AEROSOL",
+      "phenomenon": "Dense water spray plume from overtaking commercial truck.",
+      "functional_insufficiency": "Optical camera occlusion combined with radar clutter reflection.",
+      "consequence": "Loss of target track or erroneous close cut-in prediction.",
+      "quantitative_metric": "sensor_cross_correlation_index < 0.50",
+      "simulation_test_mapping": "ASAM_SCENARIO_TRUCK_PLUME_SPRAY"
+    }
+  ],
+  "ai_safety_weaknesses_iso8800": [
+    {
+      "ai_weakness_id": "AI_WEAK_OOD_SNOW_TEXTURE_01",
+      "layer": "PERCEPTION_DEEP_LEARNING",
+      "weakness": "Out-of-distribution road surface textures under partial slush/snow.",
+      "mitigation": "Epistemic uncertainty head with rejection gating and handover to classical radar filter."
+    },
+    {
+      "ai_weakness_id": "AI_WEAK_INT8_TRUNCATION_02",
+      "layer": "TENSORRT_QUANTIZATION",
+      "weakness": "Quantization loss on small bounding boxes (> 150m distant vehicles).",
+      "mitigation": "Quantization-Aware Training (QAT) with loss penalty on distant high-speed vehicles."
+    }
+  ]
+}

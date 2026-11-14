@@ -1,0 +1,41 @@
+odd_specification:
+  id: ODD-L3-HWY-DEU-001
+  version: 1.0.0
+  feature_ref: FEAT-L3-HWY-CHAUFFEUR
+  automation_level_modes:
+  - mode: L2_PLUS_DCAS
+    governing_regulation: UN_R171_DCAS
+    hands_on_required: false
+    eyes_on_required: true
+  - mode: L3_ALKS_HIGHWAY
+    governing_regulation: UN_R157_ALKS
+    hands_on_required: false
+    eyes_on_required: false
+  spatial_boundaries:
+    country: DEU
+    road_type: MOTORWAY_AUTOBAHN
+    structural_separation: PHYSICAL_CENTER_BARRIER_REQUIRED
+    lane_width_m:
+      min: 3.25
+      max: 4.5
+    curve_radius_m:
+      min: 250.0
+    geofence_exclusions:
+    - CONSTRUCTION_ZONES_YELLOW_MARKINGS
+    - TOLL_PLAZAS
+    - TUNNELS_WITHOUT_HD_MAP
+    - EMERGENCY_RETTUNGSGASSE_ACTIVE
+  kinematic_limits:
+    ego_speed_kph:
+      min: 0.0
+      max: 130.0
+  environmental_conditions:
+    precipitation_mm_per_hr:
+      max: 15.0
+    visibility_m:
+      min: 120.0
+    sun_elevation_deg:
+      min: 5.0
+  boundary_hysteresis:
+    exit_warning_lead_time_s: 10.0
+    re_entry_cooldown_s: 5.0

@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ADAS_AD_Feature_Profile",
+  "description": "Feature-agnostic configuration profile for SAE L2 through L4 ADAS/AD features.",
+  "type": "object",
+  "required": [
+    "feature_id",
+    "feature_name",
+    "sae_level",
+    "operational_domain_type",
+    "governing_regulations",
+    "safety_target_asil",
+    "compute_allocation",
+    "sensor_suite_requirements"
+  ],
+  "properties": {
+    "feature_id": {
+      "type": "string",
+      "pattern": "^FEAT-[A-Z0-9_-]+$"
+    },
+    "feature_name": {
+      "type": "string"
+    },
+    "sae_level": {
+      "type": "string",
+      "enum": ["L1", "L2", "L2_PLUS", "L3", "L4", "L5"]
+    },
+    "driver_control_responsibility": {
+      "type": "object",
+      "required": ["hands_on_required", "eyes_on_required", "ddt_fallback_actor"],
+      "properties": {
+        "hands_on_required": { "type": "boolean" },
+        "eyes_on_required": { "type": "boolean" },
+        "ddt_fallback_actor": {
+          "type": "string",
+          "enum": ["DRIVER", "SYSTEM_MINIMUM_RISK_MANEUVER", "DUAL_FALLBACK"]
+        }
+      }
+    },
+    "operational_domain_type": {
+      "type": "string",
+      "enum": ["HIGHWAY", "URBAN_ARTERIAL", "PARKING_GARAGE_VALET", "CAMPUS_SHUTTLE", "RURAL_HIGHWAY"]
+    },
+    "governing_regulations": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "safety_target_asil": {
+      "type": "string",
+      "enum": ["QM", "ASIL_A", "ASIL_B", "ASIL_C", "ASIL_D"]
+    },
+    "compute_allocation": {
+      "type": "object",
+      "required": ["primary_soc", "safety_backup_mcu", "target_wcet_ms"],
+      "properties": {
+        "primary_soc": { "type": "string" },
+        "safety_backup_mcu": { "type": "string" },
+        "target_wcet_ms": { "type": "number", "minimum": 1.0, "maximum": 200.0 }
+      }
+    },
+    "sensor_suite_requirements": {
+      "type": "object",
+      "required": ["cameras", "radars"],
+      "properties": {
+        "cameras": { "type": "integer", "minimum": 1 },
+        "radars": { "type": "integer", "minimum": 1 },
+        "lidars": { "type": "integer", "minimum": 0 },
+        "ultrasonics": { "type": "integer", "minimum": 0 },
+        "gnss_rtk": { "type": "boolean" }
+      }
+    }
+  }
+}

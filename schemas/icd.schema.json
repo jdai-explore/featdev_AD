@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Vehicle_Interface_Control_Document_Schema",
+  "type": "object",
+  "required": [
+    "icd_id",
+    "feature_ref",
+    "target_asil",
+    "compute_nodes",
+    "communication_buses",
+    "critical_signals"
+  ],
+  "properties": {
+    "icd_id": { "type": "string" },
+    "feature_ref": { "type": "string" },
+    "target_asil": { "type": "string", "enum": ["QM", "ASIL_A", "ASIL_B", "ASIL_C", "ASIL_D"] },
+    "compute_nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["node_id", "soc_type", "role", "wcet_budget_ms"],
+        "properties": {
+          "node_id": { "type": "string" },
+          "soc_type": { "type": "string" },
+          "role": { "type": "string" },
+          "wcet_budget_ms": { "type": "number", "maximum": 100.0 },
+          "failover_switch_time_ms": { "type": "number" }
+        }
+      }
+    },
+    "communication_buses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["bus_id", "bus_type", "bandwidth_mbps", "max_utilization_pct"],
+        "properties": {
+          "bus_id": { "type": "string" },
+          "bus_type": { "type": "string", "enum": ["AUTOMOTIVE_ETHERNET_1000BASE_T1", "CAN_FD_SECURE", "FLEXRAY"] },
+          "bandwidth_mbps": { "type": "number" },
+          "max_utilization_pct": { "type": "number", "maximum": 80.0 }
+        }
+      }
+    },
+    "critical_signals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["signal_name", "bus_ref", "cycle_time_ms", "e2e_protection", "payload_bits"],
+        "properties": {
+          "signal_name": { "type": "string" },
+          "bus_ref": { "type": "string" },
+          "cycle_time_ms": { "type": "integer", "minimum": 1, "maximum": 1000 },
+          "e2e_protection": { "type": "string" },
+          "payload_bits": { "type": "integer", "minimum": 1 },
+          "range": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "values": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

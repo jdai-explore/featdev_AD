@@ -1,0 +1,135 @@
+{
+  "graph_id": "KG1_REGULATORY_COMPLIANCE",
+  "version": "2026.1",
+  "description": "Unified legal, homologation and safety standards knowledge graph for EU, UNECE and German automated driving.",
+  "regulations": [
+    {
+      "standard_id": "UN_R171_DCAS",
+      "full_title": "UNECE Regulation No. 171 - Uniform Provisions Concerning the Approval of Vehicles with Regard to Driver Control Assistance Systems (DCAS)",
+      "target_levels": ["L2", "L2_PLUS"],
+      "clauses": [
+        {
+          "clause_id": "UN_R171_5.3.1",
+          "title": "Continuous Driver Monitoring",
+          "requirement_summary": "System must monitor driver engagement (hands-on or eyes-on) and provide cascading warnings within 3.0s of distraction detection.",
+          "mandatory_artifacts": ["HMI_State_Matrix", "DMS_Validation_Report"]
+        },
+        {
+          "clause_id": "UN_R171_Annex3_Para5",
+          "title": "ODD Boundary Warning & Override",
+          "requirement_summary": "System must clearly indicate functional boundary approaches with audible and optical warnings, and driver steering override must be seamless.",
+          "mandatory_artifacts": ["ODD_Specification", "Override_Torque_ICD"]
+        }
+      ]
+    },
+    {
+      "standard_id": "UN_R157_ALKS",
+      "full_title": "UNECE Regulation No. 157 - Automated Lane Keeping Systems",
+      "target_levels": ["L3"],
+      "clauses": [
+        {
+          "clause_id": "UN_R157_5.1.1",
+          "title": "Dynamic Driving Task (DDT) Control",
+          "requirement_summary": "System assumes full lateral and longitudinal control without requiring driver attention until Transition Demand is issued.",
+          "mandatory_artifacts": ["Vehicle_Architecture_ICD", "Control_Model"]
+        },
+        {
+          "clause_id": "UN_R157_6.1.1",
+          "title": "Transition Demand (TOR) and Minimum Risk Maneuver (MRM)",
+          "requirement_summary": "System shall issue a transition demand at least 10s prior to foreseeable ODD exit. If driver does not resume control, system initiates an MRM to bring vehicle to a standstill.",
+          "mandatory_artifacts": ["HMI_State_Matrix", "MRM_Trajectory_Planner"]
+        },
+        {
+          "clause_id": "UN_R157_7.1",
+          "title": "Data Storage System for Automated Driving (DSSAD)",
+          "requirement_summary": "Vehicle must log timestamped events: system activation/deactivation, transition demand, driver override, and MRM initiation into crash-hardened memory.",
+          "mandatory_artifacts": ["DSSAD_Signal_ICD", "DSSAD_Log_Validator"]
+        }
+      ]
+    },
+    {
+      "standard_id": "ISO_26262_2018",
+      "full_title": "Road Vehicles - Functional Safety (Parts 3, 4, 5, 6)",
+      "target_levels": ["L1", "L2", "L2_PLUS", "L3", "L4"],
+      "clauses": [
+        {
+          "clause_id": "ISO26262_Part3_Clause7",
+          "title": "Hazard Analysis and Risk Assessment (HARA)",
+          "requirement_summary": "Systematic identification of hazardous events and ASIL allocation based on Severity (S), Exposure (E), and Controllability (C).",
+          "mandatory_artifacts": ["HARA_Log", "Safety_Goals_Spec"]
+        },
+        {
+          "clause_id": "ISO26262_Part4_Clause6",
+          "title": "Technical Safety Concept & FTTI",
+          "requirement_summary": "Fault Tolerant Time Interval (FTTI) definition and architectural redundancy allocation to prevent single points of failure.",
+          "mandatory_artifacts": ["Technical_Safety_Concept", "ICD_Specification"]
+        }
+      ]
+    },
+    {
+      "standard_id": "ISO_21448_2022",
+      "full_title": "Road Vehicles - Safety of the Intended Functionality (SOTIF)",
+      "target_levels": ["L2_PLUS", "L3", "L4"],
+      "clauses": [
+        {
+          "clause_id": "ISO21448_Clause8",
+          "title": "Evaluation of Functional Insufficiencies and Triggering Conditions",
+          "requirement_summary": "Systematic cataloging of environmental and operational triggers (sun glare, weather, road markings, spray) that cause perception/actuation limits.",
+          "mandatory_artifacts": ["SOTIF_Trigger_Matrix", "OpenSCENARIO_Test_Suite"]
+        }
+      ]
+    },
+    {
+      "standard_id": "ISO_PAS_8800_2024",
+      "full_title": "Road Vehicles - Safety and Artificial Intelligence",
+      "target_levels": ["L2_PLUS", "L3", "L4"],
+      "clauses": [
+        {
+          "clause_id": "ISO8800_Clause9",
+          "title": "AI Dataset Quality and Out-of-Distribution (OOD) Robustness",
+          "requirement_summary": "Dataset balance, demographic/geographic representation, and neural network epistemic/aleatoric uncertainty quantification.",
+          "mandatory_artifacts": ["Dataset_Coverage_Audit", "Model_Quantization_Spec"]
+        }
+      ]
+    },
+    {
+      "standard_id": "UN_R155_CSMS",
+      "full_title": "UNECE Regulation No. 155 - Cyber Security Management System",
+      "target_levels": ["L1", "L2", "L3", "L4"],
+      "clauses": [
+        {
+          "clause_id": "UN_R155_7.2",
+          "title": "Threat Analysis & Risk Assessment (TARA)",
+          "requirement_summary": "Continuous mitigation of vehicle cyber threats across connected services, OTA channels, and in-vehicle buses.",
+          "mandatory_artifacts": ["TARA_Spreadsheet", "Cryptographic_Lease_Spec"]
+        }
+      ]
+    },
+    {
+      "standard_id": "UN_R156_SUMS",
+      "full_title": "UNECE Regulation No. 156 - Software Update and Management System",
+      "target_levels": ["L1", "L2", "L3", "L4"],
+      "clauses": [
+        {
+          "clause_id": "UN_R156_6.1",
+          "title": "Regulation X Software Identification Number (RXSWIN)",
+          "requirement_summary": "Every OTA update must verify type-approved software version hashes prior to activation on public roads.",
+          "mandatory_artifacts": ["RXSWIN_Manifest", "OTA_Handshake_Sequence"]
+        }
+      ]
+    },
+    {
+      "standard_id": "DE_AFGBV_STVG",
+      "full_title": "German Autonomous Driving Act (StVG § 1a-1f) & AFGBV Regulation",
+      "target_levels": ["L4"],
+      "clauses": [
+        {
+          "clause_id": "AFGBV_Sec3_Para2",
+          "title": "Technical Supervision & Minimal Risk State",
+          "requirement_summary": "Vehicles without driver must connect to external Technical Supervisor and autonomously execute emergency maneuvers into risk-free zones.",
+          "mandatory_artifacts": ["Remote_Supervisor_ICD", "MRM_Operational_State"]
+        }
+      ]
+    }
+  ]
+}

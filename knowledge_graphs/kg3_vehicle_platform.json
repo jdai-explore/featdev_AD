@@ -1,0 +1,71 @@
+{
+  "graph_id": "KG3_VEHICLE_EE_TOPOLOGY",
+  "version": "2.0.0",
+  "platform": "MODULAR_AUTOMOTIVE_E_E_L2_TO_L4",
+  "compute_subsystems": [
+    {
+      "ecu_id": "ECU_AD_PRIMARY",
+      "hardware": "NVIDIA_DRIVE_THOR",
+      "architecture": "ARM_V9_NEOVERSE_V3AE_PLUS_BLACKWELL_GPU_NPU",
+      "os": "QNX_SAFETY_RTOS_PLUS_DRIVE_OS",
+      "asil_capability": "ASIL_D_DECOMPOSED_B_D",
+      "max_tdp_watts": 180.0,
+      "roles": ["PERCEPTION_CNN_TRANSFORMER", "WORLD_MODEL_PREDICTION", "MOTION_PLANNING"]
+    },
+    {
+      "ecu_id": "ECU_SAFETY_FAILOVER",
+      "hardware": "INFINEON_AURIX_TC4X_TRICORE",
+      "architecture": "LOCKSTEP_TRICORE_1.8_PPU",
+      "os": "AUTOSAR_CLASSIC_4.4",
+      "asil_capability": "ASIL_D_SYSTEMIC",
+      "max_tdp_watts": 15.0,
+      "roles": ["HOT_STANDBY_SUPERVISOR", "MRM_TRAJECTORY_EXECUTION", "DSSAD_FLUSH_CONTROLLER"]
+    }
+  ],
+  "sensor_configurations": {
+    "l2_plus_suite": {
+      "cameras": [
+        {"id": "CAM_FRONT_WIDE", "resolution": "8MP", "fov_deg": 120, "bus": "GMSL2"},
+        {"id": "CAM_DMS_CABIN", "resolution": "2MP_NIR", "fov_deg": 65, "bus": "FPD_LINK3"}
+      ],
+      "radars": [
+        {"id": "RADAR_FRONT_LONG", "range_m": 250.0, "bus": "CAN_FD_ADAS"}
+      ]
+    },
+    "l3_highway_pilot_suite": {
+      "cameras": [
+        {"id": "CAM_FRONT_8MP_120", "resolution": "8MP", "fov_deg": 120, "bus": "GMSL2"},
+        {"id": "CAM_FRONT_8MP_30", "resolution": "8MP", "fov_deg": 30, "bus": "GMSL2"},
+        {"id": "CAM_SURROUND_4X", "resolution": "3MP", "fov_deg": 190, "bus": "GMSL2"},
+        {"id": "CAM_DMS_EYE_TRACKING", "resolution": "2MP_IR", "fov_deg": 60, "bus": "FPD_LINK3"}
+      ],
+      "radars": [
+        {"id": "RADAR_FRONT_4D_IMAGING", "range_m": 300.0, "bus": "1000BASE_T1"},
+        {"id": "RADAR_CORNERS_4X", "range_m": 120.0, "bus": "CAN_FD_ADAS"}
+      ],
+      "lidars": [
+        {"id": "LIDAR_FRONT_SOLID_STATE", "range_m": 200.0, "fov_deg": 120, "bus": "1000BASE_T1"}
+      ]
+    }
+  },
+  "communication_interfaces": [
+    {
+      "bus_name": "TSN_ETHERNET_BACKBONE",
+      "protocol": "IEEE_802.1Qbv_TSN",
+      "speed_mbps": 1000,
+      "max_allowed_bandwidth_utilization": 0.70
+    },
+    {
+      "bus_name": "CAN_FD_CHASSIS_SECURE",
+      "protocol": "ISO_11898_1_2015",
+      "speed_kbps": 2000,
+      "e2e_protection": "AUTOSAR_PROFILE_05_CRC16"
+    }
+  ],
+  "dssad_configuration": {
+    "recorder_node": "ECU_SAFETY_FAILOVER",
+    "storage_medium": "CRASH_HARDENED_FRAM_NVRAM",
+    "sampling_resolution_ms": 10,
+    "un_r157_retention_days": 180
+  }
+}

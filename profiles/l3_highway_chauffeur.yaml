@@ -1,0 +1,27 @@
+feature_id: "FEAT-L3-HWY-CHAUFFEUR"
+feature_name: "Level 3 Highway Chauffeur (ALKS Eyes-Off Highway Pilot)"
+sae_level: "L3"
+operational_domain_type: "HIGHWAY"
+governing_regulations:
+  - "UN_R157_ALKS"
+  - "DE_AFGBV_STVG"
+  - "UN_R155_CSMS"
+  - "UN_R156_SUMS"
+  - "ISO_26262_2018"
+  - "ISO_21448_2022"
+  - "ISO_PAS_8800_2024"
+driver_control_responsibility:
+  hands_on_required: false
+  eyes_on_required: false
+  ddt_fallback_actor: "DUAL_FALLBACK"
+safety_target_asil: "ASIL_D"
+compute_allocation:
+  primary_soc: "NVIDIA_DRIVE_THOR"
+  safety_backup_mcu: "AURIX_TC4X_LOCKSTEP"
+  target_wcet_ms: 45.0
+sensor_suite_requirements:
+  cameras: 8
+  radars: 5
+  lidars: 1
+  ultrasonics: 12
+  gnss_rtk: true

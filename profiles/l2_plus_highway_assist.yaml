@@ -1,0 +1,26 @@
+feature_id: "FEAT-L2P-HWA"
+feature_name: "Level 2+ Highway Assist (DCAS Hands-Free / Eyes-On)"
+sae_level: "L2_PLUS"
+operational_domain_type: "HIGHWAY"
+governing_regulations:
+  - "UN_R171_DCAS"
+  - "UN_R79_STEERING"
+  - "UN_R155_CSMS"
+  - "UN_R156_SUMS"
+  - "ISO_26262_2018"
+  - "ISO_21448_2022"
+driver_control_responsibility:
+  hands_on_required: false
+  eyes_on_required: true
+  ddt_fallback_actor: "DRIVER"
+safety_target_asil: "ASIL_D"
+compute_allocation:
+  primary_soc: "NVIDIA_DRIVE_ORIN_X"
+  safety_backup_mcu: "AURIX_TC397"
+  target_wcet_ms: 35.0
+sensor_suite_requirements:
+  cameras: 5
+  radars: 5
+  lidars: 0
+  ultrasonics: 12
+  gnss_rtk: true

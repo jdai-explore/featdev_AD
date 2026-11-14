@@ -1,0 +1,67 @@
+{
+  "graph_id": "KG2_ODD_TAXONOMY",
+  "version": "1.0.0",
+  "standard_alignment": "ASAM OpenODD 1.0",
+  "taxonomy": {
+    "road_networks": [
+      {
+        "type": "MOTORWAY_AUTOBAHN",
+        "speed_range_kph": [0.0, 160.0],
+        "structural_barrier_required": true,
+        "opposing_traffic_isolated": true,
+        "lane_width_envelope_m": [3.25, 4.50],
+        "min_curve_radius_m": 250.0
+      },
+      {
+        "type": "URBAN_ARTERIAL",
+        "speed_range_kph": [0.0, 60.0],
+        "structural_barrier_required": false,
+        "opposing_traffic_isolated": false,
+        "lane_width_envelope_m": [2.75, 3.75],
+        "min_curve_radius_m": 45.0
+      },
+      {
+        "type": "PARKING_STRUCTURE_AVP",
+        "speed_range_kph": [0.0, 20.0],
+        "structural_barrier_required": false,
+        "opposing_traffic_isolated": false,
+        "lane_width_envelope_m": [2.50, 4.00],
+        "min_curve_radius_m": 5.0,
+        "gnss_denied": true
+      }
+    ],
+    "environmental_phenomena": [
+      {
+        "condition": "CLEAR_DAY",
+        "precipitation_mm_per_hr": 0.0,
+        "visibility_m": 1000.0,
+        "illumination_lux": 50000.0
+      },
+      {
+        "condition": "HEAVY_RAIN",
+        "precipitation_mm_per_hr": 25.0,
+        "visibility_m": 120.0,
+        "spray_occlusion_factor": 0.45
+      },
+      {
+        "condition": "LOW_SUN_GLARE",
+        "sun_elevation_deg": 3.5,
+        "camera_saturation_risk": true,
+        "sotif_trigger_id": "SOT_TRIGGER_SUN_GLARE_01"
+      },
+      {
+        "condition": "FOG_DENSE",
+        "precipitation_mm_per_hr": 0.5,
+        "visibility_m": 50.0,
+        "lidar_backscatter_risk": true
+      }
+    ],
+    "geofence_exclusions": [
+      "CONSTRUCTION_YELLOW_MARKINGS",
+      "TOLL_BOOTHS",
+      "UNMAPPED_TUNNELS",
+      "EMERGENCY_CORRIDOR_RETTUNGSGASSE",
+      "PEDESTRIAN_SHARED_ZONES"
+    ]
+  }
+}

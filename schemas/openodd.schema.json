@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ASAM_OpenODD_Formal_Specification",
+  "type": "object",
+  "required": [
+    "odd_specification"
+  ],
+  "properties": {
+    "odd_specification": {
+      "type": "object",
+      "required": [
+        "id",
+        "version",
+        "feature_ref",
+        "spatial_boundaries",
+        "kinematic_limits",
+        "environmental_conditions",
+        "boundary_hysteresis"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "version": { "type": "string" },
+        "feature_ref": { "type": "string" },
+        "automation_level_modes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["mode", "governing_regulation"],
+            "properties": {
+              "mode": { "type": "string" },
+              "governing_regulation": { "type": "string" },
+              "hands_on_required": { "type": "boolean" },
+              "eyes_on_required": { "type": "boolean" }
+            }
+          }
+        },
+        "spatial_boundaries": {
+          "type": "object",
+          "required": ["country", "road_type", "geofence_exclusions"],
+          "properties": {
+            "country": { "type": "string" },
+            "road_type": { "type": "string" },
+            "structural_separation": { "type": "string" },
+            "lane_width_m": {
+              "type": "object",
+              "properties": {
+                "min": { "type": "number" },
+                "max": { "type": "number" }
+              }
+            },
+            "curve_radius_m": {
+              "type": "object",
+              "properties": {
+                "min": { "type": "number" }
+              }
+            },
+            "geofence_exclusions": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        },
+        "kinematic_limits": {
+          "type": "object",
+          "required": ["ego_speed_kph"],
+          "properties": {
+            "ego_speed_kph": {
+              "type": "object",
+              "properties": {
+                "min": { "type": "number" },
+                "max": { "type": "number" }
+              }
+            }
+          }
+        },
+        "environmental_conditions": {
+          "type": "object",
+          "required": ["precipitation_mm_per_hr", "visibility_m"],
+          "properties": {
+            "precipitation_mm_per_hr": {
+              "type": "object",
+              "properties": { "max": { "type": "number" } }
+            },
+            "visibility_m": {
+              "type": "object",
+              "properties": { "min": { "type": "number" } }
+            },
+            "sun_elevation_deg": {
+              "type": "object",
+              "properties": { "min": { "type": "number" } }
+            }
+          }
+        },
+        "boundary_hysteresis": {
+          "type": "object",
+          "required": ["exit_warning_lead_time_s", "re_entry_cooldown_s"],
+          "properties": {
+            "exit_warning_lead_time_s": { "type": "number", "minimum": 1.0 },
+            "re_entry_cooldown_s": { "type": "number", "minimum": 1.0 }
+          }
+        }
+      }
+    }
+  }
+}

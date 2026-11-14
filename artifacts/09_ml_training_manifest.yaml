@@ -1,0 +1,18 @@
+manifest_id: "ML-MAN-L3-HWY-001"
+version: "1.2.0"
+model_architecture: "SwinTransformer_LaneNet_V4"
+deterministic_flags:
+  torch_seed: 424242
+  cuda_deterministic: true
+  cudnn_benchmark: false
+dataset_splits:
+  train_sha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  val_sha256: "ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb"
+edge_case_slices:
+  low_sun_glare_samples: 12500
+  wet_asphalt_night_samples: 8400
+  truck_spray_aerosol_samples: 6200
+quantization_target:
+  engine: "TensorRT_10.2"
+  precision: "INT8_QAT"
+  max_allowed_map_drop_pct: 0.5

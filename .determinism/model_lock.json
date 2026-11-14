@@ -1,0 +1,34 @@
+{
+  "runtime_policy": "STRICT_DETERMINISTIC",
+  "framework_version": "2.4.0",
+  "llm_configuration": {
+    "pinned_checkpoint": "gemini-2.5-pro-002",
+    "fallback_checkpoint": "gemini-2.5-flash-002",
+    "inference_params": {
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "seed": 424242,
+      "max_output_tokens": 8192,
+      "response_mime_type": "application/json"
+    }
+  },
+  "tool_execution_policy": {
+    "live_network_allowed": false,
+    "vcr_cache_mode": "RECORD_OR_REPLAY",
+    "max_file_read_lines": 500,
+    "large_artifact_access": "SQLITE_QUERY_ONLY",
+    "enforce_sha256_context_lock": true
+  },
+  "compliance_standards": [
+    "ISO 26262:2018 (Part 3-9)",
+    "ISO 21448:2022 (SOTIF)",
+    "ISO/PAS 8800:2024 (Road Vehicles - AI Safety)",
+    "ISO/SAE 21434:2021 (Cybersecurity Engineering)",
+    "UN R157 (ALKS)",
+    "UN R171 (DCAS)",
+    "UN R155 (CSMS)",
+    "UN R156 (SUMS)",
+    "EU AI Act (High-Risk Classification)",
+    "German StVG / AFGBV (Autonomous Driving Framework)"
+  ]
+}

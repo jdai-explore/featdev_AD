@@ -1,0 +1,25 @@
+{
+  "bundle_version": "1.0.0",
+  "feature_id": "FEAT-L3-HWY-CHAUFFEUR",
+  "agent_id": "AGENT_04_HUMAN_FACTORS_HMI",
+  "llm_lock": {
+    "checkpoint": "gemini-2.5-pro-002",
+    "temperature": 0.0,
+    "seed": 424242
+  },
+  "input_hashes": {
+    "artifacts/01_compliance_matrix.csv": "1b03ecf0a6b40681161e39d341504da79408712bba1cb03fe2a80c0d7e868e0e",
+    "artifacts/02_lane_centering_odd.yaml": "92be4f7bd26abf19399184a7754d1ce8dfb6a9779f1ec1a8c1c4c2e82ac56225"
+  },
+  "output_hashes": {
+    "artifacts/04_hmi_state_matrix.csv": "8133efc1e17a81ba06a3738557386dbfce9f3acbf3934d5aafa68d112efd7484"
+  },
+  "skills_invoked": [
+    "verify_hmi_state_machine"
+  ],
+  "compliance_attestation": {
+    "iso26262_traceability_enforced": true,
+    "iso21448_sotif_matrix_linked": true,
+    "human_signoff_status": "PENDING_HUMAN_SIGN_OFF"
+  }
+}

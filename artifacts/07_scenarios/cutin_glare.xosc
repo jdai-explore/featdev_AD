@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='utf-8'?>
+<OpenSCENARIO>
+  <FileHeader revMajor="1" revMinor="2" date="2026-11-14T20:00:00" description="ISO 21448 SOTIF evaluation: Commercial 40-ton truck aggressive cut-in under low morning sun glare on Autobahn A9." author="Agent_07_Scenario_Sim_Orch" />
+  <ParameterDeclarations>
+    <ParameterDeclaration name="EgoSpeed_mps" parameterType="double" value="36.11" />
+    <ParameterDeclaration name="CARLA_RNG_Seed" parameterType="integer" value="42" />
+  </ParameterDeclarations>
+  <RoadNetwork>
+    <LogicFile filepath="../maps/autobahn_a9_3lane.xodr" />
+  </RoadNetwork>
+  <Entities>
+    <ScenarioObject name="Ego_Vehicle">
+      <CatalogReference catalogName="VehicleCatalog" entryName="Sedan_L3_SensorSuite" />
+    </ScenarioObject>
+    <ScenarioObject name="CutIn_Target">
+      <CatalogReference catalogName="VehicleCatalog" entryName="Truck_40t" />
+    </ScenarioObject>
+  </Entities>
+  <Storyboard>
+    <Init>
+      <Actions>
+        <GlobalAction>
+          <EnvironmentAction>
+            <Environment name="SOTIF_Adverse_Conditions">
+              <Weather cloudState="rainy">
+                <Sun intensity="15000" azimuth="3.14" elevation="4.5" />
+                <Precipitation precipitationType="rain" intensity="0.35" />
+              </Weather>
+            </Environment>
+          </EnvironmentAction>
+        </GlobalAction>
+        <Private entityRef="Ego_Vehicle">
+          <PrivateAction>
+            <LongitudinalAction>
+              <SpeedAction>
+                <SpeedActionDynamics dynamicsShape="step" value="0.0" dynamicsDimension="time" />
+                <SpeedActionTarget>
+                  <AbsoluteTargetSpeed value="$EgoSpeed_mps" />
+                </SpeedActionTarget>
+              </SpeedAction>
+            </LongitudinalAction>
+          </PrivateAction>
+        </Private>
+      </Actions>
+    </Init>
+    <Story name="SOTIF_CutIn_Story">
+      <Act name="Aggressive_CutIn_Act">
+        <ManeuverGroup maximumExecutionCount="1" name="CutInGroup">
+          <Actors selectTriggeringEntities="false">
+            <EntityRef entityRef="CutIn_Target" />
+          </Actors>
+          <Maneuver name="CutInManeuver">
+            <Event name="StartCutIn" priority="overwrite">
+              <Action name="CutInLaneChange">
+                <PrivateAction>
+                  <LateralAction>
+                    <LaneChangeAction>
+                      <LaneChangeActionDynamics dynamicsShape="sinusoidal" value="2.5" dynamicsDimension="time" />
+                      <LaneChangeTarget>
+                        <RelativeTargetLane entityRef="Ego_Vehicle" value="0" />
+                      </LaneChangeTarget>
+                    </LaneChangeAction>
+                  </LateralAction>
+                </PrivateAction>
+              </Action>
+              <StartTrigger>
+                <ConditionGroup>
+                  <Condition name="TTC_Threshold_Met" delay="0" conditionEdge="rising">
+                    <ByEntityCondition>
+                      <TriggeringEntities triggeringEntitiesRule="any">
+                        <EntityRef entityRef="Ego_Vehicle" />
+                      </TriggeringEntities>
+                      <EntityCondition>
+                        <TimeToCollisionCondition value="2.2" freespace="true" rule="lessThan">
+                          <TimeToCollisionConditionTarget>
+                            <EntityRef entityRef="CutIn_Target" />
+                          </TimeToCollisionConditionTarget>
+                        </TimeToCollisionCondition>
+                      </EntityCondition>
+                    </ByEntityCondition>
+                  </Condition>
+                </ConditionGroup>
+              </StartTrigger>
+            </Event>
+          </Maneuver>
+        </ManeuverGroup>
+      </Act>
+    </Story>
+  </Storyboard>
+</OpenSCENARIO>
