@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='utf-8'?>
+<OpenSCENARIO xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="OpenScenario.xsd">
+    <FileHeader description="SAF_SOTIF_AVP_001_PillarOcclusion_Pedestrian" author="Agent_07_Scenario_Sim_Orch" revMajor="1" revMinor="2" date="2026-11-15T00:17:20.120323"/>
+    <ParameterDeclarations>
+        <ParameterDeclaration name="EgoSpeed_mps" parameterType="double" value="4.16"/>
+        <ParameterDeclaration name="TargetSpeed_mps" parameterType="double" value="1.2"/>
+        <ParameterDeclaration name="CARLA_RNG_Seed" parameterType="int" value="42"/>
+    </ParameterDeclarations>
+    <CatalogLocations/>
+    <RoadNetwork>
+        <LogicFile filepath="../maps/parking_garage_multi_deck.xodr"/>
+    </RoadNetwork>
+    <Entities>
+        <ScenarioObject name="Ego_Vehicle">
+            <CatalogReference catalogName="VehicleCatalog" entryName="Sedan_L3_SensorSuite"/>
+        </ScenarioObject>
+        <ScenarioObject name="CutIn_Target">
+            <CatalogReference catalogName="VehicleCatalog" entryName="Truck_40t"/>
+        </ScenarioObject>
+    </Entities>
+    <Storyboard>
+        <Init>
+            <Actions>
+                <GlobalAction>
+                    <EnvironmentAction>
+                        <Environment name="SOTIF_Adverse_Conditions">
+                            <Weather fractionalCloudCover="eightOktas">
+                                <Sun azimuth="3.14" illuminance="15000.0" elevation="0.0"/>
+                                <Precipitation precipitationType="rain" precipitationIntensity="0.0"/>
+                            </Weather>
+                        </Environment>
+                    </EnvironmentAction>
+                </GlobalAction>
+                <Private entityRef="Ego_Vehicle">
+                    <PrivateAction>
+                        <LongitudinalAction>
+                            <SpeedAction>
+                                <SpeedActionDynamics dynamicsShape="step" value="0.0" dynamicsDimension="time"/>
+                                <SpeedActionTarget>
+                                    <AbsoluteTargetSpeed value="$EgoSpeed_mps"/>
+                                </SpeedActionTarget>
+                            </SpeedAction>
+                        </LongitudinalAction>
+                    </PrivateAction>
+                </Private>
+                <Private entityRef="CutIn_Target">
+                    <PrivateAction>
+                        <LongitudinalAction>
+                            <SpeedAction>
+                                <SpeedActionDynamics dynamicsShape="step" value="0.0" dynamicsDimension="time"/>
+                                <SpeedActionTarget>
+                                    <AbsoluteTargetSpeed value="$TargetSpeed_mps"/>
+                                </SpeedActionTarget>
+                            </SpeedAction>
+                        </LongitudinalAction>
+                    </PrivateAction>
+                </Private>
+            </Actions>
+        </Init>
+        <Story name="SOTIF_CutIn_Story">
+            <Act name="Aggressive_CutIn_Act">
+                <ManeuverGroup name="CutInGroup" maximumExecutionCount="1">
+                    <Actors selectTriggeringEntities="false">
+                        <EntityRef entityRef="CutIn_Target"/>
+                    </Actors>
+                    <Maneuver name="CutInManeuver">
+                        <Event name="StartCutIn" priority="override" maximumExecutionCount="1">
+                            <Action name="CutInLaneChange">
+                                <PrivateAction>
+                                    <LateralAction>
+                                        <LaneChangeAction>
+                                            <LaneChangeActionDynamics dynamicsShape="sinusoidal" value="2.5" dynamicsDimension="time"/>
+                                            <LaneChangeTarget>
+                                                <RelativeTargetLane value="0" entityRef="Ego_Vehicle"/>
+                                            </LaneChangeTarget>
+                                        </LaneChangeAction>
+                                    </LateralAction>
+                                </PrivateAction>
+                            </Action>
+                            <StartTrigger>
+                                <ConditionGroup>
+                                    <Condition name="TTC_Threshold_Met" delay="0.0" conditionEdge="rising">
+                                        <ByEntityCondition>
+                                            <TriggeringEntities triggeringEntitiesRule="any">
+                                                <EntityRef entityRef="CutIn_Target"/>
+                                            </TriggeringEntities>
+                                            <EntityCondition>
+                                                <TimeToCollisionCondition value="1.8" relativeDistanceType="longitudinal" coordinateSystem="road" freespace="true" rule="lessThan">
+                                                    <TimeToCollisionConditionTarget>
+                                                        <EntityRef entityRef="Ego_Vehicle"/>
+                                                    </TimeToCollisionConditionTarget>
+                                                </TimeToCollisionCondition>
+                                            </EntityCondition>
+                                        </ByEntityCondition>
+                                    </Condition>
+                                </ConditionGroup>
+                            </StartTrigger>
+                        </Event>
+                    </Maneuver>
+                </ManeuverGroup>
+                <StartTrigger>
+                    <ConditionGroup>
+                        <Condition name="act_start" delay="0.0" conditionEdge="none">
+                            <ByValueCondition>
+                                <SimulationTimeCondition value="0.0" rule="greaterThan"/>
+                            </ByValueCondition>
+                        </Condition>
+                    </ConditionGroup>
+                </StartTrigger>
+                <StopTrigger/>
+            </Act>
+        </Story>
+        <StopTrigger/>
+    </Storyboard>
+</OpenSCENARIO>

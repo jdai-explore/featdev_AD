@@ -170,5 +170,48 @@ class TestADASAgenticFramework(unittest.TestCase):
         self.assertEqual(res["status"], "PASS")
         self.assertEqual(res["gatekeeper_verdict"]["gate_decision"], "PASS")
 
+    def test_14_trace_extractor_dynamic_sync(self):
+        """Verifies automated trace extraction and SQLite graph sync (Milestone 3)."""
+        from skills.trace_extractor import TraceabilityExtractor
+        db_file = self.root / "knowledge_graphs/kg5_traceability.sqlite"
+        extractor = TraceabilityExtractor(db_file)
+        targets = list((self.root / "artifacts").rglob("*.*"))
+        res = extractor.extract_and_sync(targets)
+        self.assertEqual(res["status"], "PASS")
+        self.assertGreater(res["nodes_extracted_count"], 30)
+
+    def test_15_regulatory_fts5_search(self):
+        """Verifies SQLite FTS5 BM25 regulatory search (Milestone 3)."""
+        from skills.kg_ingestor import RegulatoryKGIngestor
+        ingestor = RegulatoryKGIngestor()
+        ingestor.ingest_from_json()
+        hits = ingestor.search_clauses("transition demand minimum risk")
+        self.assertGreater(len(hits), 0)
+        self.assertEqual(hits[0]["clause_id"], "UN_R157_6.1.1")
+
+    def test_16_l4_avp_feature_stack_validation(self):
+        """Verifies end-to-end L4 Automated Valet Parking feature deliverables (Milestone 5)."""
+        from skills.openodd_builder import build_and_validate_openodd
+        from skills.state_machine_verifier import verify_hmi_state_machine
+        from skills.code_safety_linter import lint_embedded_c_code
+
+        # 1. OpenODD
+        odd_file = self.root / "artifacts/l4_avp/02_avp_odd.yaml"
+        schema_file = self.root / "schemas/openodd.schema.json"
+        with open(odd_file, "r", encoding="utf-8") as yf:
+            odd_data = yaml.safe_load(yf)
+        odd_res = build_and_validate_openodd(odd_data, schema_file, odd_file)
+        self.assertEqual(odd_res["status"], "PASS")
+
+        # 2. HMI State Machine
+        hmi_file = self.root / "artifacts/l4_avp/04_avp_hmi_state_matrix.csv"
+        hmi_res = verify_hmi_state_machine(str(hmi_file))
+        self.assertEqual(hmi_res["status"], "PASS")
+
+        # 3. MISRA-C AST
+        c_file = self.root / "artifacts/l4_avp/08_avp_controller.c"
+        c_res = lint_embedded_c_code(str(c_file))
+        self.assertEqual(c_res["status"], "PASS")
+
 if __name__ == "__main__":
     unittest.main()

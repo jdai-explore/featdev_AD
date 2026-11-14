@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <OpenSCENARIO xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="OpenScenario.xsd">
-    <FileHeader description="SAF_SOTIF_001_CutIn_LowSunGlare" author="Agent_07_Scenario_Sim_Orch" revMajor="1" revMinor="2" date="2026-11-15T00:04:57.906348"/>
+    <FileHeader description="SAF_SOTIF_001_CutIn_LowSunGlare" author="Agent_07_Scenario_Sim_Orch" revMajor="1" revMinor="2" date="2026-11-15T00:18:19.313041"/>
     <ParameterDeclarations>
         <ParameterDeclaration name="EgoSpeed_mps" parameterType="double" value="36.11"/>
         <ParameterDeclaration name="TargetSpeed_mps" parameterType="double" value="30.6935"/>

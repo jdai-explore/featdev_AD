@@ -1,0 +1,36 @@
+odd_specification:
+  id: ODD-L4-AVP-GARAGE-001
+  version: 1.0.0
+  feature_ref: FEAT-L4-AVP
+  automation_level_modes:
+  - mode: L4_AVP_DRIVERLESS
+    governing_regulation: DE_AFGBV_STVG
+    hands_on_required: false
+    eyes_on_required: false
+  spatial_boundaries:
+    country: DEU
+    road_type: PARKING_STRUCTURE_AVP
+    structural_separation: MULTI_STOREY_PARKING_DECK
+    lane_width_m:
+      min: 2.75
+      max: 4.0
+    curve_radius_m:
+      min: 12.0
+    geofence_exclusions:
+    - PUBLIC_STREET_RAMPS
+    - RAMPS_SLOPE_EXCEEDING_15_PERCENT
+    - UNMAPPED_SERVICE_AREAS
+  kinematic_limits:
+    ego_speed_kph:
+      min: 0.0
+      max: 20.0
+  environmental_conditions:
+    precipitation_mm_per_hr:
+      max: 0.0
+    visibility_m:
+      min: 30.0
+    sun_elevation_deg:
+      min: 0.0
+  boundary_hysteresis:
+    exit_warning_lead_time_s: 5.0
+    re_entry_cooldown_s: 3.0
