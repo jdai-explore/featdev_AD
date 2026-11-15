@@ -1,0 +1,21 @@
+# Core runtime (all standard library except these)
+pyyaml>=6.0
+jsonschema>=4.0
+
+# OpenSCENARIO / ODD scenario generation
+scenariogeneration>=0.14.0
+
+# Geometric validation (ODD curvature feasibility)
+shapely>=2.0
+
+# Unified chat UI (replaces streamlit)
+chainlit>=2.12.0
+
+# HTTP requests (web_fetcher fallback if urllib insufficient)
+requests>=2.31.0
+
+# Optional: trafilatura for better HTML→text extraction in web_fetcher
+# trafilatura>=1.6.0
+
+# Optional: python-dotenv for automatic .env loading
+# python-dotenv>=1.0.0

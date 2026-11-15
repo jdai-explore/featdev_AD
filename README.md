@@ -42,7 +42,7 @@ A deterministic, production-grade multi-agent engineering platform designed for 
 flowchart TD
     subgraph HumanHub ["Human Systems Architect (The Hub)"]
         Lead["Lead Systems Architect / Safety Manager"]
-        Cockpit["Review Cockpits (Terminal Rich CLI & Streamlit)"]
+        Cockpit["Review Cockpit (Chainlit Unified UI + Terminal CLI)"]
     end
 
     subgraph StateGraphEngine ["LangGraph-Inspired StateGraph Core"]
@@ -174,8 +174,8 @@ python orchestrator/cockpit_cli.py inspect --agent-id AGENT_04_HUMAN_FACTORS_HMI
 # Approve and seal an execution bundle with Lead Architect sign-off:
 python orchestrator/cockpit_cli.py signoff --agent-id AGENT_04_HUMAN_FACTORS_HMI --feature-id FEAT-L3-HWY-CHAUFFEUR
 
-# Launch the interactive Streamlit browser dashboard:
-streamlit run orchestrator/dashboard_app.py
+# Launch the unified Chainlit cockpit (chat + status + approve + tool traces):
+python -m chainlit run orchestrator/chat_app.py --port 8000
 ```
 
 ### Mode E: Traceability & Change Impact Analysis
@@ -191,15 +191,15 @@ python orchestrator/pipeline_runner.py --project FEAT-L3-HWY-CHAUFFEUR trigger-c
 
 ## Verification & Test Suite
 
-The platform includes a 20-test automated verification suite covering schemas, AST parsing, kinematics, bus timing, gatekeepers, state checkpointing, and immutability guards:
+The platform includes a 25-test automated verification suite covering schemas, AST parsing, kinematics, bus timing, gatekeepers, state checkpointing, immutability guards, LLM provider resolution, tool registry dispatch, and skeptical regulatory web intelligence:
 
 ```powershell
 python tests/test_framework.py
 ```
 ```text
-....................
+.........................
 ----------------------------------------------------------------------
-Ran 20 tests in 2.233s
+Ran 25 tests in 2.333s
 
 OK (100% Pass)
 ```
