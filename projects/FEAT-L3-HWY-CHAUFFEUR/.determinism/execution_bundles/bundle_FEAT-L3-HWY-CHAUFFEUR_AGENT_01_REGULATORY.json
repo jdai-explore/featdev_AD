@@ -16,6 +16,7 @@
   },
   "skills_invoked": [
     "query_regulatory_kg",
+    "fetch_live_regulation",
     "validate_traceability"
   ],
   "compliance_attestation": {

@@ -31,7 +31,10 @@ def run_gatekeeper(bundle_path_str: str) -> dict:
 
     # 1. Verify Input Cryptographic Fingerprints
     for rel_path, expected_hash in bundle.get("input_hashes", {}).items():
-        full_p = runtime.base_dir / rel_path
+        try:
+            full_p = runtime.resolve_path(rel_path)
+        except FileNotFoundError:
+            full_p = runtime.base_dir / rel_path
         if not full_p.exists():
             errors.append(f"Input artifact missing: {rel_path}")
             continue
@@ -41,7 +44,10 @@ def run_gatekeeper(bundle_path_str: str) -> dict:
 
     # 2. Verify Output Cryptographic Fingerprints & Validate Content
     for rel_path, expected_hash in bundle.get("output_hashes", {}).items():
-        full_p = runtime.base_dir / rel_path
+        try:
+            full_p = runtime.resolve_path(rel_path)
+        except FileNotFoundError:
+            full_p = runtime.base_dir / rel_path
         if not full_p.exists():
             errors.append(f"Generated output missing: {rel_path}")
             continue

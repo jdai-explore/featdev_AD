@@ -102,30 +102,33 @@ class DeterministicAgentRuntime:
 
     def resolve_path(self, p: str) -> Path:
         """Resolves artifact path prioritizing feature project deliverables."""
-        path_obj = Path(p)
+        normalized = str(p).replace("\\", "/")
+        path_obj = Path(normalized)
+
         if path_obj.is_absolute() and path_obj.exists():
             return path_obj
-        
-        # Check project deliverables first if project_id is set
-        if self.project_id:
-            # If path starts with artifacts/, look inside deliverables/
-            if str(p).replace("\\", "/").startswith("artifacts/"):
-                sub_rel = str(p).replace("\\", "/")[len("artifacts/"):]
-                cand = self.deliverables_dir / sub_rel
-                if cand.exists():
-                    return cand
-            cand_deliv = self.deliverables_dir / path_obj.name
-            if cand_deliv.exists():
-                return cand_deliv
-            cand_proj = self.project_dir / p
-            if cand_proj.exists():
-                return cand_proj
 
-        # Fallback to base_dir
-        base_cand = self.base_dir / p
-        if base_cand.exists():
-            return base_cand
-            
+        candidates: List[Path] = []
+
+        # Project-scoped candidates first when a feature project is active.
+        if self.project_id:
+            if normalized.startswith("artifacts/"):
+                candidates.append(self.deliverables_dir / normalized[len("artifacts/"):])
+            if normalized.startswith("deliverables/"):
+                candidates.append(self.project_dir / normalized)
+            if normalized.startswith("projects/"):
+                candidates.append(self.base_dir / normalized)
+            candidates.append(self.deliverables_dir / normalized.lstrip("./"))
+            candidates.append(self.project_dir / normalized.lstrip("./"))
+
+        # Base repo candidates.
+        candidates.append(self.base_dir / normalized)
+        candidates.append(Path(normalized))
+
+        for cand in candidates:
+            if cand.exists():
+                return cand
+
         raise FileNotFoundError(f"Required artifact missing: {p}")
 
     def get_input_fingerprints(self, file_paths: List[str]) -> Dict[str, str]:

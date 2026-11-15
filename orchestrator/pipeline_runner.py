@@ -221,7 +221,7 @@ def main():
     pipe_cmd.add_argument("--pause-after", nargs="*", help="Agent IDs or phase numbers to pause after")
 
     resume_cmd = subparsers.add_parser("resume", help="Resume pipeline from a checkpoint")
-    resume_cmd.add_argument("--checkpoint", required=True, help="Path to checkpoint JSON file")
+    resume_cmd.add_argument("--checkpoint", "--resume-from", dest="checkpoint", required=True, help="Path to checkpoint JSON file")
     resume_cmd.add_argument("--patch", help="JSON string of state updates to patch into state")
 
     sign_cmd = subparsers.add_parser("signoff", help="Human coordinator signs off on an agent bundle")

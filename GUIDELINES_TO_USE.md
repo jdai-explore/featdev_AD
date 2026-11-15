@@ -149,10 +149,11 @@ Approve and seal the execution bundle with your Lead Architect sign-off:
 python orchestrator/cockpit_cli.py signoff --agent-id AGENT_04_HUMAN_FACTORS_HMI --feature-id FEAT-L3-HWY-CHAUFFEUR
 ```
 
-*(Optional) Launch the interactive Streamlit browser cockpit:*
+Launch the **unified Chainlit cockpit** (chat + pipeline status + approve + tool traces — replaces the former Streamlit dashboard):
 ```powershell
-streamlit run orchestrator/dashboard_app.py
+python -m chainlit run orchestrator/chat_app.py --port 8000
 ```
+Open `http://localhost:8000` in your browser. From there you can type commands (`status`, `run AGENT_01_REGULATORY`, `approve`, `resume`) or chat naturally with the LLM — no separate terminal needed for monitoring.
 
 ### Mode E: Synchronize Traceability & Run Change Impact Analysis
 Synchronize `traceability.sqlite` across all phases:
