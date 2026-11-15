@@ -154,7 +154,7 @@ sequenceDiagram
 
 ---
 
-## 5. The 11 Specialized Engineering Agents
+## 5. The 12 Specialized Engineering Agents
 
 Each agent is governed by a declarative YAML contract located in `agents/`:
 
@@ -327,6 +327,25 @@ guardrails:
   - "Strictly read-only on signed-off files; only marks status flags in kg5_traceability.sqlite."
   - "Cannot overwrite human sign-offs; must emit advisory report requiring coordinator re-approval."
 ```
+<!-- slide -->
+```yaml
+# Agent 12: Continuous Tooling Optimizer (Meta-DevOps)
+agent_id: "AGENT_12_CONTINUOUS_IMPROVEMENT"
+phase: "Meta-Phase: Continuous Tooling Improvement & ASPICE SUP.1 Quality Assurance"
+role: "Lead Automotive Agentic DevOps & ASPICE Quality Assurance Engineer"
+skills:
+  - name: "analyze_tooling_telemetry"
+    script: "skills/tooling_optimizer.py"
+  - name: "validate_patch_regression"
+    script: "tests/test_framework.py"
+outputs:
+  - artifact: "docs/improvement_proposals/CRIP_TEMPLATE.md"
+guardrails:
+  - "Self-modifying code in production is strictly prohibited (ISO 26262 Part 8 / ASPICE MAN.3 compliance)."
+  - "Must never auto-commit to main branch or overwrite production agent/skill files directly."
+  - "Must formulate improvements as human-reviewable Change Request & Improvement Proposals (CRIP)."
+  - "Must validate proposed changes against full regression test suite (tests/test_framework.py) before human submission."
+```
 ````
 
 ---
@@ -376,10 +395,10 @@ The analyzer immediately outputs [11_change_impact_report.md](file:///C:/Users/j
 All framework components have been physically implemented on disk in the project directory:
 `C:\Users\jayad\.gemini\antigravity\scratch\adas_ad_agentic_framework\`
 
-### Automated Verification Results (16 of 16 Passed 100%)
+### Automated Verification Results (20 of 20 Passed 100%)
 ```text
 test_01_model_lock_configuration .............. PASS (Strict temp=0.0, seed=424242, no live web)
-test_02_all_agent_yaml_contracts_valid ........ PASS (11 of 11 Agent Contracts conform to schema)
+test_02_all_agent_yaml_contracts_valid ........ PASS (12 of 12 Agent Contracts conform to schema)
 test_03_feature_profiles_valid ................ PASS (L2+, L3, L4 Profiles valid against schema)
 test_04_openodd_schema_and_lead_time .......... PASS (ASAM OpenODD 1.0 valid, lead_time >= 10.0s)
 test_05_hmi_state_machine_formal_verification . PASS (0 dead-ends, full reachability, guaranteed MRM)
@@ -394,8 +413,12 @@ test_13_agent_react_self_correction_loop ...... PASS (AgentReActExecutor PDCA cy
 test_14_trace_extractor_dynamic_sync .......... PASS (Automated artifact parsing & SQLite graph synchronization)
 test_15_regulatory_fts5_search ................ PASS (SQLite FTS5 BM25 indexed legal & safety clause retrieval)
 test_16_l4_avp_feature_stack_validation ....... PASS (End-to-End L4 Automated Valet Parking deliverables)
+test_17_canonical_terminology_and_kg_standards .. PASS (KG0 Terminology Registry & ISO/SAE standards coverage)
+test_18_workspace_partitioning_and_immutability . PASS (Toolchain Immutability Guard & Project Deliverable Scope)
+test_19_durable_checkpointer_and_state_graph ... PASS (LangGraph State Snapshots, Rewind & Breakpoint Pause)
+test_20_tooling_optimizer_and_crip_synthesis ... PASS (Agent 12 CRIP Proposal Synthesis & Regression Check)
 ----------------------------------------------------------------------
-Ran 16 tests in 2.153s -- OK (100% Pass Rate)
+Ran 20 tests in 2.233s -- OK (100% Pass Rate)
 ```
 
 ---
@@ -435,6 +458,9 @@ To mathematically prove the framework is feature-agnostic, a complete engineerin
   - [l2_plus_highway_assist.yaml](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/profiles/l2_plus_highway_assist.yaml)
   - [l3_highway_chauffeur.yaml](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/profiles/l3_highway_chauffeur.yaml)
   - [l4_automated_valet_parking.yaml](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/profiles/l4_automated_valet_parking.yaml)
+- **Isolated Project Workspaces:**
+  - [projects/FEAT-L3-HWY-CHAUFFEUR/](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/projects/FEAT-L3-HWY-CHAUFFEUR/)
+  - [projects/FEAT-L4-AVP/](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/projects/FEAT-L4-AVP/)
 - **Generated Engineering Artifacts for L3 Highway Chauffeur:**
   - Compliance Matrix: [01_compliance_matrix.csv](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/artifacts/01_compliance_matrix.csv)
   - ASAM OpenODD Spec: [02_lane_centering_odd.yaml](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/artifacts/02_lane_centering_odd.yaml)
@@ -446,3 +472,28 @@ To mathematically prove the framework is feature-agnostic, a complete engineerin
   - MISRA-C Safety Controller Wrapper: [08_lane_controller.c](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/artifacts/08_lane_controller.c)
   - Multi-Stage SiL KPI Report: [08_validation_report.md](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/artifacts/08_validation_report.md)
   - Change Impact Assessment Report: [11_change_impact_report.md](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/artifacts/11_change_impact_report.md)
+
+---
+
+## 10. Workspace Partitioning, StateGraph Engine & Meta-DevOps
+
+### 1. Workspace Partitioning & Toolchain Immutability (ISO 26262-8 Clause 11)
+To ensure auditability and prevent accidental toolchain corruption, real deliverables are physically segregated into isolated feature project directories:
+- `projects/FEAT-L3-HWY-CHAUFFEUR/deliverables/`: Contains all Phase 1-8 artifacts for the L3 Highway Chauffeur.
+- `projects/FEAT-L4-AVP/deliverables/`: Contains all Phase 2-8 artifacts for L4 Automated Valet Parking.
+
+The root engine (`agents/`, `skills/`, `schemas/`, `knowledge_graphs/`, `core/`, `validators/`) is cryptographically sealed as read-only. Any attempt by an LLM or tool to modify files in protected directories raises a `ToolchainImmutabilityViolationError`.
+
+### 2. LangGraph-Inspired StateGraph & Durable Checkpoints
+The master pipeline runner operates as a transactional state machine:
+- **Durable Checkpointing (`core/state_graph.py`):** State is committed after every phase to `.checkpoints/checkpoint_<feature>_phase<N>_<agent>.json`.
+- **Breakpoints (`--pause-after <AGENT_ID>`):** Enables lead architects to pause execution at critical phase milestones for peer review.
+- **Interactive Step-Mode (`--step`):** Prompts for confirmation before each node transition.
+- **Graceful Interruption:** Catches `SIGINT` (Ctrl+C), commits an emergency `.interrupted_checkpoint.json`, and halts safely without file corruption.
+- **Hierarchical Tracing:** LangSmith-style execution trees capturing timing, token telemetry, and human review feedback.
+
+### 3. Agent 12: Continuous Tooling Optimizer (Offline Meta-Learning)
+Agent 12 (`agents/12_continuous_improvement_agent.yaml` & `skills/tooling_optimizer.py`) observes operational usage without violating safety rules:
+- Scans execution telemetry and human review rejection notes.
+- Synthesizes Change Request & Improvement Proposals (CRIP) in `docs/improvement_proposals/` alongside Git unified diff patches.
+- Executes regression verification against the full test harness prior to presenting proposals for human sign-off.

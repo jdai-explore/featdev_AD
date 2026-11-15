@@ -57,8 +57,9 @@ flowchart TD
 
 ## 2. Pre-Flight Setup: Staging Your Feature
 
-Before invoking any agent, define your feature in `profiles/`:
+Every feature development workspace is isolated in `projects/<feature_id>/` (e.g. `projects/FEAT-L3-HWY-CHAUFFEUR/` or `projects/FEAT-L4-AVP/`), which contains its own `feature_profile.yaml`, `deliverables/`, `.checkpoints/`, and `traceability.sqlite`.
 
+You can select or stage a feature profile:
 ```bash
 # Example: To develop an L3 Highway Chauffeur
 cp profiles/l3_highway_chauffeur.yaml profiles/feature_profile.yaml
@@ -153,12 +154,17 @@ python orchestrator/cockpit_cli.py signoff --agent-id AGENT_04_HUMAN_FACTORS_HMI
 streamlit run orchestrator/dashboard_app.py
 ```
 
-### Step 3: Synchronize the Bi-Directional Traceability Graph
-After generating or modifying artifacts, synchronize `kg5_traceability.sqlite`:
+### Mode E: Synchronize Traceability & Run Change Impact Analysis
+Synchronize `traceability.sqlite` across all phases:
 ```powershell
 python skills/trace_extractor.py
 ```
 *This automatically extracts all `REQ-*`, `ODD-*`, `HMI-*`, `SAF-*`, `ARCH-*`, and `CODE-*` identifiers and maps relational links without manual SQL editing.*
+
+Trigger ripple effect analysis when a requirement changes:
+```powershell
+python orchestrator/pipeline_runner.py --project FEAT-L3-HWY-CHAUFFEUR trigger-change --trace-id ODD-SPEC-001 --reason "Lowered minimum visibility from 150m to 120m for heavy rain"
+```
 
 ---
 
