@@ -1,11 +1,44 @@
 # Autonomous Driving & ADAS Feature Engineering Agentic Ecosystem
 
-[![Tests: 20/20 Passing](https://img.shields.io/badge/Automated%20Tests-20%2F20%20Pass%20(100%25)-brightgreen.svg)](#verification--test-suite)
+[![Tests: 25/25 Passing](https://img.shields.io/badge/Automated%20Tests-25%2F25%20Pass%20(100%25)-brightgreen.svg)](#verification--test-suite)
 [![SAE Autonomy](https://img.shields.io/badge/SAE%20Autonomy-Level%202%20to%20Level%204-blue.svg)](#key-capabilities--architectural-pillars)
 [![Compliance](https://img.shields.io/badge/Compliance-ISO%2026262%20%7C%20ISO%2021448%20%7C%20ISO%2021434%20%7C%20UN%20R157-orange.svg)](#the-6-shared-domain-knowledge-graphs)
 [![Architecture](https://img.shields.io/badge/Architecture-LangGraph%20StateGraph%20%7C%20Durable%20Checkpoints-purple.svg)](#pillar-2-langgraph-durable-statemachine--interruption-engine)
 
 A deterministic, production-grade multi-agent engineering platform designed for architecting, verifying, validating, and homologating safety-critical **Advanced Driver Assistance Systems (ADAS)** and **Autonomous Driving (AD)** features across **SAE Level 2 through Level 4**.
+
+---
+
+## ⚡ Quickstart in 60 Seconds (From VS Code Terminal)
+
+### 1. Configure Your LLM Provider (Provider-Agnostic)
+The framework works with **any** LLM (OpenAI, Gemini, local Ollama, Groq, Mistral, vLLM) or runs completely offline:
+```powershell
+# Copy the provider template
+cp .env.example .env
+```
+Open `.env` in VS Code and uncomment your preferred provider:
+- **Local Ollama (Zero Cost / Private):** `LLM_BASE_URL=http://localhost:11434/v1` and `LLM_MODEL=llama3.2`
+- **Google Gemini:** `GEMINI_API_KEY=AIzaSy...`
+- **OpenAI:** `OPENAI_API_KEY=sk-...`
+- **No API Key / CI/CD:** Leave `.env` empty — the system runs in **Deterministic Offline Simulation Mode**.
+
+### 2. Run System Preparedness Check
+Verify your dependencies, knowledge graphs, and LLM endpoint before starting:
+```powershell
+python orchestrator/doctor.py
+```
+*(You should see `[READY] System is 100% prepared.`)*
+
+### 3. Spin Up the Unified Mission Control Cockpit
+```powershell
+python -m chainlit run orchestrator/chat_app.py --port 8000
+```
+Open **`http://localhost:8000`** in your browser. From here, you have full mission control:
+- **Switch or Initialize Projects:** Click `[✨ New Feature Project]` or `use FEAT-L4-AVP`.
+- **Run Pipelines & Gates:** Click `[🚀 Launch Full Pipeline]` or execute single agents like `run AGENT_01_REGULATORY`.
+- **Human Sign-Off:** Review gatekeeper assertions and approve execution bundles with a single click `[✅ Sign-off]`.
+- **Live Regulatory Intelligence:** Ask about UN R157 amendments or ISO 26262 requirements directly in the chat!
 
 ---
 
