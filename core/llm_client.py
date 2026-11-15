@@ -264,14 +264,23 @@ class UniversalLLMClient:
         req = urllib.request.Request(url, data=data_bytes, headers=headers, method="POST")
 
         try:
-            with urllib.request.urlopen(req, timeout=60) as resp:
+            # Local models might take a moment to load weights into VRAM on first prompt
+            timeout_val = 180 if is_local else 60
+            with urllib.request.urlopen(req, timeout=timeout_val) as resp:
                 resp_data = json.loads(resp.read().decode("utf-8"))
                 choice = resp_data.get("choices", [{}])[0]
                 message = choice.get("message", {})
+
+                raw_content = message.get("content") or ""
+                # Handle thinking/reasoning models (like gemma4 or DeepSeek R1) that put thought trace in reasoning field
+                if not raw_content and message.get("reasoning"):
+                    raw_content = message.get("reasoning")
+
                 return {
                     "id": resp_data.get("id", "resp_live"),
                     "model": resp_data.get("model", self.model),
-                    "content": message.get("content", ""),
+                    "content": raw_content,
+                    "reasoning": message.get("reasoning"),
                     "tool_calls": message.get("tool_calls")
                 }
         except Exception as e:

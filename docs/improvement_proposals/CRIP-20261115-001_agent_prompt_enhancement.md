@@ -3,7 +3,7 @@
 **Title:** Clarify Multi-Modal Escalation Lead Times in HMI Agent Prompt  
 **Target Component:** `agents/04_human_factors_hmi.yaml`  
 **Category:** `AGENT_PROMPT_ENHANCEMENT`  
-**Generated At:** 2026-11-15T18:36:14.113289+00:00  
+**Generated At:** 2026-11-15T18:58:44.974778+00:00  
 **Governing Standard:** ASPICE SUP.1 (Quality Assurance) / ISO 26262-8 (Tool Qualification)  
 
 ---
