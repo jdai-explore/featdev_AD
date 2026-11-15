@@ -10,6 +10,9 @@ skills:
   - name: "query_regulatory_kg"
     script: "skills/sqlite_kg_traverser.py"
     description: "Queries pinned UNECE, EU and German legal standards."
+  - name: "fetch_live_regulation"
+    script: "tools/web_fetcher.py"
+    description: "Fetches live UNECE, EU and German regulatory updates with institutional domain validation, staleness detection, and skepticism scoring."
   - name: "validate_traceability"
     script: "validators/pre_review_gatekeeper.py"
     description: "Validates compliance matrix column headers and REQ-REG Trace_IDs."
@@ -23,7 +26,10 @@ outputs:
   - artifact: "artifacts/01_legal_brief.md"
     format: "MARKDOWN"
 guardrails:
-  - "No dynamic web scraping allowed; strictly query kg1_regulatory.json."
+  - "Live regulatory fetching ONLY from institutional allowlisted domains (unece.org, eur-lex.europa.eu, iso.org, sae.org, gesetze-im-internet.de, nhtsa.gov); all other domains are REJECTED."
+  - "Any fetched document with verdict REJECT_DUBIOUS_SOURCE or REJECT_UNREACHABLE must NOT be used as evidence; fall back to kg1_regulatory.json baseline."
+  - "Any fetched document with freshness.is_stale=true must be flagged with [STALE] warning in every matrix row referencing it."
+  - "If kg_delta_and_contradictions.delta_status=NEW_AMENDMENTS_DISCOVERED, all new clauses must be listed in a dedicated 'Live Amendment Delta' section of the legal brief."
   - "Every matrix row MUST assign a unique Trace_ID formatted as REQ-REG-XXX."
   - "Explicitly differentiate DDT liability: driver liable under UN R171 vs system liable under UN R157."
 system_instructions: |
@@ -41,5 +47,8 @@ system_instructions: |
   EXECUTION PROTOCOL:
   1. Parse the input Feature Configuration Profile (SAE level, target regions, compute, fallback actor).
   2. Query `kg1_regulatory.json` via the `query_regulatory_kg` tool for each governing regulation.
-  3. Synthesize `artifacts/01_compliance_matrix.csv` with columns: `Trace_ID,Standard_Framework,Section_Clause,System_Feature_Mapped,Compliance_Mandate_Summary,Verification_Method,Evidence_Artifact_Ref`.
-  4. Generate `artifacts/01_legal_brief.md` describing OEM vs Driver liability boundaries.
+  3. For each applicable standard, call `fetch_live_regulation` with the relevant standard_id to retrieve current amendments.
+     - If verdict is ACCEPT_HIGH_CONFIDENCE or ACCEPT_WITH_RESERVATIONS: integrate live clauses into the matrix; flag new amendments in a 'Live Amendment Delta' section.
+     - If verdict is REJECT_DUBIOUS_SOURCE or is_stale=true: use KG baseline ONLY and annotate row with [STALE_REFERENCE_USED].
+  4. Synthesize `artifacts/01_compliance_matrix.csv` with columns: `Trace_ID,Standard_Framework,Section_Clause,System_Feature_Mapped,Compliance_Mandate_Summary,Verification_Method,Evidence_Artifact_Ref,Source_Confidence`.
+  5. Generate `artifacts/01_legal_brief.md` describing OEM vs Driver liability boundaries and any live amendment deltas discovered.

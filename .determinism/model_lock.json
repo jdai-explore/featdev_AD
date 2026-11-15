@@ -1,6 +1,6 @@
 {
   "runtime_policy": "STRICT_DETERMINISTIC",
-  "framework_version": "2.4.0",
+  "framework_version": "2.5.0",
   "llm_configuration": {
     "pinned_checkpoint": "gemini-2.5-pro-002",
     "fallback_checkpoint": "gemini-2.5-flash-002",
@@ -10,11 +10,31 @@
       "seed": 424242,
       "max_output_tokens": 8192,
       "response_mime_type": "application/json"
+    },
+    "provider_agnostic": {
+      "enabled": true,
+      "env_resolution_order": ["LLM_API_KEY", "OPENAI_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY"],
+      "base_url_env": "LLM_BASE_URL",
+      "model_env": "LLM_MODEL",
+      "offline_fallback": true
     }
   },
   "tool_execution_policy": {
     "live_network_allowed": false,
+    "live_network_allowed_tools": ["fetch_live_regulation"],
+    "live_network_allowed_domains": [
+      "unece.org",
+      "eur-lex.europa.eu",
+      "iso.org",
+      "sae.org",
+      "gesetze-im-internet.de",
+      "bmdv.bund.de",
+      "nhtsa.gov",
+      "federalregister.gov",
+      "asam.net"
+    ],
     "vcr_cache_mode": "RECORD_OR_REPLAY",
+    "web_cache_ttl_days": 7,
     "max_file_read_lines": 500,
     "large_artifact_access": "SQLITE_QUERY_ONLY",
     "enforce_sha256_context_lock": true

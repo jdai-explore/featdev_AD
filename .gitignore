@@ -2,3 +2,15 @@ __pycache__/
 *.pyc
 *.pyo
 .pytest_cache/
+
+# LLM Provider secrets — NEVER commit
+.env
+
+# Web fetch cache (auto-rebuilt on next run)
+.determinism/web_cache/
+
+# Project checkpoint state (large, project-specific)
+projects/*/.*checkpoints/
+
+# SQLite files are derived from JSON — rebuild with kg_ingestor.py --ingest
+*.sqlite

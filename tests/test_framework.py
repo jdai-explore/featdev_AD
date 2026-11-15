@@ -303,5 +303,116 @@ class TestADASAgenticFramework(unittest.TestCase):
         self.assertTrue(crip_doc.exists())
         self.assertTrue(crip_doc.name.endswith(".md"))
 
+    def test_21_universal_llm_client_offline_mode(self):
+        """Verifies UniversalLLMClient runs in offline simulation mode with no credentials."""
+        from core.llm_client import UniversalLLMClient
+
+        # Instantiate with no API key — should activate offline fallback
+        client = UniversalLLMClient(api_key="", offline_fallback=True)
+        self.assertTrue(client.offline_fallback)
+
+        messages = [
+            {"role": "system", "content": "You are a regulatory compliance agent."},
+            {"role": "user", "content": "Query UNECE R157 requirements for ALKS operational speed."}
+        ]
+        # Offline fallback should produce a valid response dict (no API call)
+        result = client.chat_completion(messages)
+        self.assertIn("content", result)
+        self.assertIn("model", result)
+        self.assertIn("offline-sim", result["model"])
+
+    def test_22_universal_llm_client_provider_resolution(self):
+        """Verifies LLM client resolves provider from environment variables."""
+        import os
+        from core.llm_client import UniversalLLMClient
+
+        # Simulate Ollama local LLM env
+        os.environ["LLM_BASE_URL"] = "http://localhost:11434/v1"
+        os.environ["LLM_MODEL"] = "llama3.2"
+        client = UniversalLLMClient()
+        self.assertIn("localhost:11434", client.base_url)
+        self.assertEqual(client.model, "llama3.2")
+
+        # Cleanup
+        del os.environ["LLM_BASE_URL"]
+        del os.environ["LLM_MODEL"]
+
+    def test_23_tool_registry_registration_and_dispatch(self):
+        """Verifies ToolRegistry correctly registers tools and dispatches calls."""
+        from core.tool_registry import ToolRegistry
+
+        registry = ToolRegistry()
+
+        @registry.register(description="Returns double of the input integer.")
+        def double_it(value: int) -> int:
+            return value * 2
+
+        # Verify tool registered
+        defs = registry.get_tool_definitions()
+        tool_names = [d["function"]["name"] for d in defs]
+        self.assertIn("double_it", tool_names)
+
+        # Verify schema generated correctly
+        schema = next(d for d in defs if d["function"]["name"] == "double_it")
+        self.assertEqual(schema["function"]["parameters"]["properties"]["value"]["type"], "integer")
+
+        # Verify execution
+        result = registry.execute_tool("double_it", {"value": 21})
+        self.assertEqual(result["status"], "SUCCESS")
+        self.assertEqual(result["result"], 42)
+
+    def test_24_skeptical_web_fetcher_offline(self):
+        """Verifies SkepticalWebFetcher runs in offline mode, applies skepticism, and detects kg deltas."""
+        from tools.web_fetcher import SkepticalWebFetcher
+
+        fetcher = SkepticalWebFetcher()
+
+        # Fetch with offline simulation (no real HTTP call in sandboxed test)
+        result = fetcher.fetch_live_regulation(
+            query_or_url="https://unece.org/transport/documents/un-regulation-157",
+            standard_id="UN_R157",
+            max_age_days=180,
+            allow_offline_sim=True
+        )
+
+        # Must return a structured result with skepticism audit
+        self.assertIn(result["verdict"], [
+            "ACCEPT_HIGH_CONFIDENCE", "ACCEPT_WITH_RESERVATIONS",
+            "REJECT_DUBIOUS_SOURCE", "REJECT_UNREACHABLE"
+        ])
+        self.assertIn("confidence_score", result)
+        self.assertIn("freshness", result)
+        self.assertIn("skepticism_audit", result)
+        self.assertIn("kg_delta_and_contradictions", result)
+
+        # Domain must be in allowlist
+        self.assertIn(result["source_domain"], [
+            "unece.org", "eur-lex.europa.eu", "iso.org", "sae.org"
+        ])
+
+        # Skepticism must have fired domain trust
+        self.assertGreater(result["skepticism_audit"]["domain_trust"], 0.5)
+
+        # Freshness must be populated
+        self.assertIn("is_stale", result["freshness"])
+        self.assertIn("document_age_days", result["freshness"])
+
+    def test_25_model_lock_provider_agnostic_config(self):
+        """Verifies model_lock.json has provider-agnostic fields and tool-scoped network policy."""
+        lock = self.runtime.model_lock
+        # Provider-agnostic section must exist
+        self.assertIn("provider_agnostic", lock["llm_configuration"])
+        pa = lock["llm_configuration"]["provider_agnostic"]
+        self.assertTrue(pa["enabled"])
+        self.assertTrue(pa["offline_fallback"])
+        self.assertIn("LLM_API_KEY", pa["env_resolution_order"])
+
+        # live_network_allowed must still be False at framework level
+        self.assertFalse(lock["tool_execution_policy"]["live_network_allowed"])
+
+        # But specific tool and domains must be allowed
+        self.assertIn("fetch_live_regulation", lock["tool_execution_policy"]["live_network_allowed_tools"])
+        self.assertIn("unece.org", lock["tool_execution_policy"]["live_network_allowed_domains"])
+
 if __name__ == "__main__":
     unittest.main()
