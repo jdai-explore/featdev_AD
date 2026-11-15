@@ -9,8 +9,9 @@ __pycache__/
 # Web fetch cache (auto-rebuilt on next run)
 .determinism/web_cache/
 
-# Project checkpoint state (large, project-specific)
-projects/*/.*checkpoints/
-
-# SQLite files are derived from JSON — rebuild with kg_ingestor.py --ingest
+# Derived / runtime state — regenerated on every run, never commit
 *.sqlite
+projects/**/.checkpoints/
+projects/**/.determinism/tool_vcr_cache/
+.determinism/tool_vcr_cache/
+.determinism/web_cache/
