@@ -1,0 +1,4 @@
+Trace_ID,Threat_ID,Asset_Target,Threat_Scenario,Attack_Vector,Impact_Level,Likelihood,CAL,Security_Mitigation
+AUTH-TARA-001,THR-01,Subscription Token,Spoofing forged feature activation JWT token to enable L3 mode.,Diagnostic OBD-II port,High,Low,CAL_3,ECDSA-P384 digital signature verified in Hardware Security Module (HSM).
+AUTH-TARA-002,THR-02,OTA RXSWIN Payload,Injecting malicious firmware payload during OTA campaign.,Cellular Telematics Gateway,Severe,Low,CAL_4,UN R156 SUMS manifest hash verification prior to dual-bank flash swap.
+AUTH-TARA-003,THR-03,In-Vehicle Bus,Replaying steering curvature CAN-FD frame to cause lateral drift.,Internal CAN-FD Bus,Severe,Medium,CAL_4,AUTOSAR E2E Profile 05 with rolling 4-bit alive counter and 16-bit CRC.

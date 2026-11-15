@@ -1,0 +1,26 @@
+{
+  "bundle_version": "1.0.0",
+  "feature_id": "FEAT-L3-HWY-CHAUFFEUR",
+  "agent_id": "AGENT_06_SYSTEM_EE_ARCH",
+  "llm_lock": {
+    "checkpoint": "gemini-2.5-pro-002",
+    "temperature": 0.0,
+    "seed": 424242
+  },
+  "input_hashes": {
+    "projects/FEAT-L3-HWY-CHAUFFEUR/deliverables/05_safety_analysis.csv": "123bb80c9aae041a72c3d2936d1e202a415a6d9315c17979463d5cc821671c9f",
+    "projects/FEAT-L3-HWY-CHAUFFEUR/deliverables/05_safety_goals_spec.md": "7bea31f472243dac4656c74bad9bf0fbb289927a2cee06672b50c5171a274e99"
+  },
+  "output_hashes": {
+    "projects/FEAT-L3-HWY-CHAUFFEUR/deliverables/06_vehicle_arch_icd.json": "d9426ef61a34491dd47fdcdb497161807bec470c53e1d5669bd2b25adf9a77fa",
+    "projects/FEAT-L3-HWY-CHAUFFEUR/deliverables/06_system_architecture.md": "c915c301db7f8f09f572f682f438a47fa1bd737304fa99b7ffafec246f6abeb2"
+  },
+  "skills_invoked": [
+    "evaluate_icd_performance"
+  ],
+  "compliance_attestation": {
+    "iso26262_traceability_enforced": true,
+    "iso21448_sotif_matrix_linked": true,
+    "human_signoff_status": "PENDING_HUMAN_SIGN_OFF"
+  }
+}

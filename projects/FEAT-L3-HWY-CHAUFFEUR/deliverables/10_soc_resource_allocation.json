@@ -1,0 +1,21 @@
+{
+  "allocation_id": "SOC-ALLOC-THOR-AURIX-001",
+  "primary_soc": {
+    "device": "NVIDIA_DRIVE_THOR",
+    "cpu_cores_allocated": 8,
+    "cpu_utilization_pct": 52.4,
+    "gpu_sm_allocated": 48,
+    "gpu_utilization_pct": 64.0,
+    "npu_dla_allocated": 2,
+    "npu_utilization_pct": 71.5,
+    "memory_bandwidth_gbps": 420.0,
+    "memory_bandwidth_utilization_pct": 61.2,
+    "thermal_tdp_watts": 135.0
+  },
+  "safety_mcu": {
+    "device": "INFINEON_AURIX_TC4X",
+    "tricore_utilization_pct": 41.8,
+    "ppu_npu_utilization_pct": 28.5,
+    "sram_utilization_pct": 45.0
+  }
+}

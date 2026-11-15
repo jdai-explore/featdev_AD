@@ -1,0 +1,26 @@
+feature_id: "FEAT-L4-AVP"
+feature_name: "Level 4 Automated Valet Parking (AVP Driverless)"
+sae_level: "L4"
+operational_domain_type: "PARKING_GARAGE_VALET"
+governing_regulations:
+  - "DE_AFGBV_STVG"
+  - "UN_R155_CSMS"
+  - "UN_R156_SUMS"
+  - "ISO_26262_2018"
+  - "ISO_21448_2022"
+  - "ISO_PAS_8800_2024"
+driver_control_responsibility:
+  hands_on_required: false
+  eyes_on_required: false
+  ddt_fallback_actor: "SYSTEM_MINIMUM_RISK_MANEUVER"
+safety_target_asil: "ASIL_D"
+compute_allocation:
+  primary_soc: "NVIDIA_DRIVE_THOR"
+  safety_backup_mcu: "AURIX_TC4X_LOCKSTEP"
+  target_wcet_ms: 60.0
+sensor_suite_requirements:
+  cameras: 12
+  radars: 4
+  lidars: 2
+  ultrasonics: 16
+  gnss_rtk: false

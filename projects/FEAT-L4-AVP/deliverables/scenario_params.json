@@ -1,0 +1,12 @@
+{
+  "scenario_id": "SAF_SOTIF_AVP_001_PillarOcclusion_Pedestrian",
+  "description": "L4 AVP SOTIF evaluation: Pedestrian steps out from behind parking garage concrete pillar at 1.8s TTC.",
+  "opendrive_map": "../maps/parking_garage_multi_deck.xodr",
+  "ego_speed_mps": 4.16,
+  "target_speed_mps": 1.2,
+  "ttc_trigger_s": 1.8,
+  "lane_change_duration_s": 2.5,
+  "rng_seed": 42,
+  "sun_elevation_deg": 0.0,
+  "precipitation_intensity": 0.0
+}

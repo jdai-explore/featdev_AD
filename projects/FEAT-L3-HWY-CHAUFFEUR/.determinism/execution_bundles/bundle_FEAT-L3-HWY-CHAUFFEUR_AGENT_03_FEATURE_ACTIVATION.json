@@ -1,0 +1,25 @@
+{
+  "bundle_version": "1.0.0",
+  "feature_id": "FEAT-L3-HWY-CHAUFFEUR",
+  "agent_id": "AGENT_03_FEATURE_ACTIVATION",
+  "llm_lock": {
+    "checkpoint": "gemini-2.5-pro-002",
+    "temperature": 0.0,
+    "seed": 424242
+  },
+  "input_hashes": {
+    "projects/FEAT-L3-HWY-CHAUFFEUR/deliverables/02_lane_centering_odd.yaml": "f0c56dd7de4ade6dba255506833a6500283e1fb3b466592243b2fa3867c8ef5b"
+  },
+  "output_hashes": {
+    "projects/FEAT-L3-HWY-CHAUFFEUR/deliverables/03_subscription_ota.puml": "47f671779283b7abe1d69d0c36044f970f4a62b1de00bad7d45b3d07db06d366",
+    "projects/FEAT-L3-HWY-CHAUFFEUR/deliverables/03_tara_threat_analysis.csv": "adf89ee30b3977aa4f87e4a335226c8d16b83b2b03732d72d29afba07aca0590"
+  },
+  "skills_invoked": [
+    "state_machine_verifier"
+  ],
+  "compliance_attestation": {
+    "iso26262_traceability_enforced": true,
+    "iso21448_sotif_matrix_linked": true,
+    "human_signoff_status": "PENDING_HUMAN_SIGN_OFF"
+  }
+}

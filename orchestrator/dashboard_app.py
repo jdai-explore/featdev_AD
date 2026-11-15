@@ -42,6 +42,17 @@ with open(PROFILES_DIR / f"{selected_profile}.yaml", "r", encoding="utf-8") as p
 feat_id = profile_data.get("feature_id", "FEAT-L3-HWY-CHAUFFEUR")
 st.sidebar.info(f"**Feature ID:** `{feat_id}`\n\n**SAE Level:** `{profile_data.get('sae_level')}`\n\n**Target ASIL:** `{profile_data.get('safety_target_asil')}`")
 
+# Dynamically resolve project-isolated workspace paths
+project_dir = ROOT / f"projects/{feat_id}"
+if project_dir.exists():
+    BUNDLES_DIR = project_dir / ".determinism/execution_bundles"
+    ARTIFACTS_DIR = project_dir / "deliverables"
+    DB_PATH = project_dir / "traceability.sqlite"
+else:
+    BUNDLES_DIR = ROOT / ".determinism/execution_bundles"
+    ARTIFACTS_DIR = ROOT / "artifacts"
+    DB_PATH = ROOT / "knowledge_graphs/kg5_traceability.sqlite"
+
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 🔒 Deterministic Engine")
 lock_file = ROOT / ".determinism/model_lock.json"

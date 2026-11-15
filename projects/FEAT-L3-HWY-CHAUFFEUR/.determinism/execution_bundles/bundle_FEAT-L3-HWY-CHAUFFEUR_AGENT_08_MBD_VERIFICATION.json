@@ -1,0 +1,26 @@
+{
+  "bundle_version": "1.0.0",
+  "feature_id": "FEAT-L3-HWY-CHAUFFEUR",
+  "agent_id": "AGENT_08_MBD_VERIFICATION",
+  "llm_lock": {
+    "checkpoint": "gemini-2.5-pro-002",
+    "temperature": 0.0,
+    "seed": 424242
+  },
+  "input_hashes": {
+    "projects/FEAT-L3-HWY-CHAUFFEUR/deliverables/06_vehicle_arch_icd.json": "d9426ef61a34491dd47fdcdb497161807bec470c53e1d5669bd2b25adf9a77fa",
+    "projects/FEAT-L3-HWY-CHAUFFEUR/deliverables/07_scenarios/cutin_glare.xosc": "dee2b4a14aa6c91d7d75163273eec0a0395a7332e9ee94423bb4bc228fd76283"
+  },
+  "output_hashes": {
+    "projects/FEAT-L3-HWY-CHAUFFEUR/deliverables/08_lane_controller.c": "52b49bd7ed95593e1ff9e8a11915dcf3fc09648810b879bb174ae6fd92a2f061",
+    "projects/FEAT-L3-HWY-CHAUFFEUR/deliverables/08_validation_report.md": "419db023c763ded9d0c403d4c2b72fc33aa66d1ebf324d641218300fb32f1255"
+  },
+  "skills_invoked": [
+    "lint_embedded_c_code"
+  ],
+  "compliance_attestation": {
+    "iso26262_traceability_enforced": true,
+    "iso21448_sotif_matrix_linked": true,
+    "human_signoff_status": "PENDING_HUMAN_SIGN_OFF"
+  }
+}

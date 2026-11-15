@@ -38,13 +38,13 @@ class TestADASAgenticFramework(unittest.TestCase):
         self.assertFalse(lock["tool_execution_policy"]["live_network_allowed"])
 
     def test_02_all_agent_yaml_contracts_valid(self):
-        """Validates all 11 Agent YAML contracts against agent_contract.schema.json."""
+        """Validates all Agent YAML contracts (11 core + meta-agents) against agent_contract.schema.json."""
         schema_path = self.root / "schemas/agent_contract.schema.json"
         with open(schema_path, "r", encoding="utf-8") as sf:
             schema = json.load(sf)
 
         agent_files = list((self.root / "agents").glob("*.yaml"))
-        self.assertEqual(len(agent_files), 11, "Must have exactly 11 agent contracts")
+        self.assertGreaterEqual(len(agent_files), 11, "Must have at least 11 agent contracts")
 
         for af in agent_files:
             with open(af, "r", encoding="utf-8") as yf:
@@ -242,6 +242,66 @@ class TestADASAgenticFramework(unittest.TestCase):
         self.assertIn("cybersecurity_threat_scenarios", kg4_data)
         self.assertGreaterEqual(len(kg4_data["cybersecurity_threat_scenarios"]), 3)
         self.assertGreaterEqual(len(kg4_data["functional_safety_hazards"]), 5)
+
+    def test_18_workspace_partitioning_and_immutability_guard(self):
+        """Pillar 1: Verifies workspace partitioning and defense against core toolchain mutations."""
+        from core.runtime import ToolchainImmutabilityViolationError
+        runtime = DeterministicAgentRuntime(base_dir=str(self.root), project_id="FEAT-L3-HWY-CHAUFFEUR")
+        
+        # Verify deliverable and bundle paths point into projects/FEAT-L3-HWY-CHAUFFEUR/
+        self.assertEqual(runtime.project_dir.name, "FEAT-L3-HWY-CHAUFFEUR")
+        self.assertTrue(runtime.deliverables_dir.exists())
+        self.assertTrue(runtime.bundle_dir.exists())
+
+        # Immutability check: Attempting to write into core protected directories MUST raise error
+        protected_target = self.root / "skills/malicious_patch.py"
+        with self.assertRaises(ToolchainImmutabilityViolationError):
+            runtime.assert_write_target_allowed(protected_target)
+
+        # Allowed target check: Writing inside projects/FEAT-L3-HWY-CHAUFFEUR/deliverables/ must pass
+        allowed_target = runtime.deliverables_dir / "02_lane_centering_odd.yaml"
+        try:
+            runtime.assert_write_target_allowed(allowed_target)
+        except ToolchainImmutabilityViolationError:
+            self.fail("Legitimate project deliverable was falsely blocked by immutability guard")
+
+    def test_19_durable_checkpointer_and_state_graph(self):
+        """Pillar 2: Verifies LangGraph-style state checkpointing, rewind, and breakpoint pausing."""
+        from core.state_graph import DurableCheckpointer, StateGraphEngine
+        cp_dir = self.root / "projects/FEAT-L3-HWY-CHAUFFEUR/.checkpoints"
+        checkpointer = DurableCheckpointer(cp_dir)
+        
+        # Verify latest checkpoint exists and can be loaded
+        latest_cp = cp_dir / "checkpoint_FEAT-L3-HWY-CHAUFFEUR_latest.json"
+        self.assertTrue(latest_cp.exists())
+        state = checkpointer.load(latest_cp)
+        self.assertEqual(state["feature_id"], "FEAT-L3-HWY-CHAUFFEUR")
+        self.assertIn("completed_phases", state)
+
+        # Verify breakpoint pause engine
+        engine = StateGraphEngine(
+            feature_id="FEAT-L3-HWY-CHAUFFEUR",
+            base_dir=self.root,
+            pause_after=["AGENT_01_REGULATORY"]
+        )
+        res = engine.run_pipeline(start_phase=1, end_phase=3)
+        self.assertTrue(res)
+        self.assertEqual(engine.state["status"], "BREAKPOINT_PAUSED")
+        self.assertEqual(engine.state["current_agent"], "AGENT_01_REGULATORY")
+
+    def test_20_tooling_optimizer_and_crip_synthesis(self):
+        """Pillar 3: Verifies Agent 12 Continuous Tooling Optimizer CRIP proposal synthesis."""
+        from skills.tooling_optimizer import ToolingOptimizer
+        optimizer = ToolingOptimizer(self.root)
+        telemetry = optimizer.scan_telemetry("FEAT-L3-HWY-CHAUFFEUR")
+        
+        self.assertIn("identified_improvements", telemetry)
+        self.assertGreaterEqual(len(telemetry["identified_improvements"]), 1)
+        
+        prop = telemetry["identified_improvements"][0]
+        crip_doc = optimizer.generate_crip_document(prop)
+        self.assertTrue(crip_doc.exists())
+        self.assertTrue(crip_doc.name.endswith(".md"))
 
 if __name__ == "__main__":
     unittest.main()

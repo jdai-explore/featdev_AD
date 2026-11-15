@@ -1,0 +1,74 @@
+{
+  "icd_id": "ICD-AVP-L4-PARKING-2026",
+  "feature_ref": "FEAT-L4-AVP",
+  "target_asil": "ASIL_D",
+  "compute_nodes": [
+    {
+      "node_id": "ECU_AVP_PRIMARY",
+      "soc_type": "NVIDIA_DRIVE_THOR",
+      "role": "PRIMARY_LOCALIZATION_OCCUPANCY_PLANNER",
+      "wcet_budget_ms": 45.0,
+      "failover_switch_time_ms": 15.0
+    },
+    {
+      "node_id": "ECU_AVP_SAFETY_MCU",
+      "soc_type": "INFINEON_AURIX_TC4X_LOCKSTEP",
+      "role": "BRAKE_COLLISION_AVOIDANCE_AND_MRM_STANDSTILL",
+      "wcet_budget_ms": 15.0,
+      "failover_switch_time_ms": 10.0
+    }
+  ],
+  "communication_buses": [
+    {
+      "bus_id": "TSN_ETHERNET_1000BASE_T1",
+      "bus_type": "AUTOMOTIVE_ETHERNET_1000BASE_T1",
+      "bandwidth_mbps": 1000.0,
+      "max_utilization_pct": 70.0
+    },
+    {
+      "bus_id": "CAN_FD_SECURE_CHASSIS",
+      "bus_type": "CAN_FD_SECURE",
+      "bandwidth_mbps": 2.0,
+      "max_utilization_pct": 65.0
+    }
+  ],
+  "critical_signals": [
+    {
+      "signal_name": "AVP_SteeringAngle_deg",
+      "bus_ref": "CAN_FD_SECURE_CHASSIS",
+      "cycle_time_ms": 10,
+      "e2e_protection": "AUTOSAR_PROFILE_05_CRC16_ALIVE_COUNTER",
+      "payload_bits": 64,
+      "range": [-500.0, 500.0]
+    },
+    {
+      "signal_name": "AVP_TargetVelocity_mps",
+      "bus_ref": "CAN_FD_SECURE_CHASSIS",
+      "cycle_time_ms": 10,
+      "e2e_protection": "AUTOSAR_PROFILE_05_CRC16_ALIVE_COUNTER",
+      "payload_bits": 64,
+      "range": [-2.0, 6.0]
+    },
+    {
+      "signal_name": "AVP_DSSAD_Status",
+      "bus_ref": "CAN_FD_SECURE_CHASSIS",
+      "cycle_time_ms": 10,
+      "e2e_protection": "AUTOSAR_PROFILE_05_CRC16_ALIVE_COUNTER",
+      "payload_bits": 128,
+      "values": [
+        "AVP_IDLE_0",
+        "AVP_MISSION_ACTIVE_1",
+        "AVP_PEDESTRIAN_YIELD_2",
+        "AVP_RTS_ENGAGED_3",
+        "AVP_MRM_STANDSTILL_4"
+      ]
+    },
+    {
+      "signal_name": "AVP_LiDAR_OccupancyGrid",
+      "bus_ref": "TSN_ETHERNET_1000BASE_T1",
+      "cycle_time_ms": 20,
+      "e2e_protection": "AUTOSAR_PROFILE_05_CRC16_ALIVE_COUNTER",
+      "payload_bits": 16384
+    }
+  ]
+}

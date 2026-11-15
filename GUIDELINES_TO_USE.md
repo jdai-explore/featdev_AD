@@ -24,10 +24,11 @@ flowchart TD
         A08["08: MBD & Verification"]
     end
 
-    subgraph CrossCutting ["Cross-Cutting Specialists"]
+    subgraph CrossCutting ["Cross-Cutting & Meta Specialists"]
         A09["09: ML/AI Safety Tuning"]
         A10["10: HW/SW Integration"]
         A11["11: Change Impact Agent"]
+        A12["12: Continuous Tooling Optimizer (Meta-DevOps)"]
     end
 
     subgraph GatekeeperCore ["Automated Verification Layer"]
@@ -95,9 +96,25 @@ Follow this sequential workflow. Each step specifies **what you provide**, **whi
 
 ## 4. Execution Commands (Terminal Cheatsheet)
 
-### Step 1: Run an Agent Phase (With Automated Self-Correction)
+### Mode A: Full StateGraph Pipeline (Durable Checkpoints & Breakpoints)
 ```powershell
-# Example: Run Phase 2 (ODD Architect)
+# Run complete V-Model pipeline (Phases 1-8) for a project:
+python orchestrator/pipeline_runner.py --project FEAT-L3-HWY-CHAUFFEUR run-pipeline --start-phase 1 --end-phase 8
+
+# Run with interactive step-by-step confirmation prompts:
+python orchestrator/pipeline_runner.py --project FEAT-L3-HWY-CHAUFFEUR run-pipeline --step
+
+# Run with an automated breakpoint after a specific agent:
+python orchestrator/pipeline_runner.py --project FEAT-L3-HWY-CHAUFFEUR run-pipeline --pause-after AGENT_04_HUMAN_FACTORS_HMI
+
+# Resume execution from any saved checkpoint:
+python orchestrator/pipeline_runner.py --project FEAT-L3-HWY-CHAUFFEUR resume --checkpoint projects/FEAT-L3-HWY-CHAUFFEUR/.checkpoints/checkpoint_FEAT-L3-HWY-CHAUFFEUR_phase4_AGENT_04_HUMAN_FACTORS_HMI_BREAKPOINT.json
+```
+*(Pressing `Ctrl+C` at any time safely interrupts execution, commits an emergency `.interrupted_checkpoint.json`, and halts cleanly without corrupting files).*
+
+### Mode B: Single Agent Execution (With Autonomous Self-Correction)
+```powershell
+# Example: Run Phase 2 (ODD Architect) within project workspace
 python core/agent_executor.py AGENT_02_ODD_ARCHITECT FEAT-L3-HWY-CHAUFFEUR
 
 # Example: Run Phase 4 (Human Factors & HMI)
@@ -108,7 +125,14 @@ python core/agent_executor.py AGENT_08_MBD_VERIFICATION FEAT-L3-HWY-CHAUFFEUR
 ```
 *If a drafted artifact has an error (e.g. curve radius too sharp for speed, or an unreachable state), the agent's internal PDCA cycle automatically reinjects the linter diagnostics and repairs the artifact before presenting it.*
 
-### Step 2: Open the Review Cockpit to Inspect & Sign Off
+### Mode C: Meta-Learning & Tooling Optimization (Agent 12)
+```powershell
+# Scan execution telemetry, gatekeeper failures, and architect comments to generate CRIP proposals:
+python orchestrator/pipeline_runner.py --project FEAT-L3-HWY-CHAUFFEUR optimize-tooling
+```
+*Agent 12 produces human-reviewable Change Request & Improvement Proposals (CRIP) in `docs/improvement_proposals/` alongside Git patch diffs, strictly validated against regression tests.*
+
+### Mode D: Review Cockpit & Audit Sign-Off
 Launch the terminal cockpit dashboard:
 ```powershell
 python orchestrator/cockpit_cli.py status --feature-id FEAT-L3-HWY-CHAUFFEUR

@@ -1,0 +1,52 @@
+@startuml
+autonumber
+skinparam BoxPadding 10
+skinparam ParticipantPadding 10
+
+box "Cloud & OEM Connected Backend" #LightYellow
+participant "Mobile Companion App" as App
+participant "Entitlement & SUMS Backend" as Backend
+end box
+
+box "Vehicle Edge Compute Platform" #LightCyan
+participant "Telematics Gateway / SUMS" as OTA
+participant "Feature Access Controller (Crypto MCU)" as Auth
+participant "Vehicle Digital Cockpit (HMI)" as HMI
+participant "Automated Driving Domain Controller" as AD
+end box
+
+== 1. Subscription Provisioning & Cryptographic Lease Push ==
+App -> Backend: Purchase L3 Highway Chauffeur Subscription (Driver Profile: Alice)
+Backend -> Backend: Generate RSA-4096 / ECDSA-P384 Signed Lease Token (Valid: 30 Days)\nBind RXSWIN type approval signature (UN R156)
+Backend -> OTA: Encrypted HTTPS / TLS 1.3 Token Delivery
+OTA -> Auth: Store Signed Lease Token into Non-Volatile Secure Element
+Auth --> HMI: Feature Entitled: L3 Highway Chauffeur Ready
+
+== 2. Drive Start & Offline Tunnel Grace Period Handling ==
+Driver -> HMI: Ignition ON (Binds Driver Profile A via UWB Key)
+Auth -> Auth: Verify Local Lease Signature & Validity Timestamp
+alt Token Valid & Network In Coverage
+    Auth -> AD: Authorize L3 Automated Driving Functionality
+    HMI -> Driver: Display Ready: L3 Available (Teal Highway Icon)
+else Cellular Dead Zone (e.g., Bavarian Mountain Tunnel)
+    Auth -> Auth: Check Offline Elapsed Time (< 24 Hour Grace Window)
+    Auth -> AD: Authorize L3 Cruise (Offline Lease Cache Active)
+    HMI -> Driver: L3 Engaged (Offline Grace Indicator Active)
+end
+
+== 3. Critical Safety Edge Case: Mid-Drive Subscription Revocation ==
+Backend -> OTA: Push Subscription Expiry / Revocation Flag (Payment Default)
+OTA -> Auth: Transmit Revocation Command
+Auth -> Auth: Check Current Dynamic Driving State
+alt Vehicle State == L3_ACTIVE_CRUISING
+    note over Auth, AD #Pink
+        **CRITICAL AUTOMOTIVE SAFETY RULE (ISO 26262 / UN R157)**:
+        Under no circumstances may automated driving be deactivated abruptly mid-drive!
+        Enforce **Graceful Session Lock**:
+        - Feature remains 100% active until driver manual disengagement or safe ODD exit.
+        - Revocation is staged to prevent re-engagement on the next ignition cycle.
+    end note
+    Auth -> Auth: Set Flag: DISABLE_ON_NEXT_IGNITION_CYCLE
+    Auth --> HMI: Maintain Active Driving Display (Silent Background Lock)
+end
+@enduml

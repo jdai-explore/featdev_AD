@@ -28,10 +28,11 @@ from skills.sqlite_kg_traverser import query_traceability, query_regulatory_kg
 from validators.pre_review_gatekeeper import run_gatekeeper
 
 class AgentReActExecutor:
-    def __init__(self, agent_id: str, base_dir: Optional[str] = None):
+    def __init__(self, agent_id: str, base_dir: Optional[str] = None, project_id: Optional[str] = None):
         self.root = Path(base_dir) if base_dir else ROOT
         self.agent_id = agent_id
-        self.runtime = DeterministicAgentRuntime(base_dir=str(self.root))
+        self.project_id = project_id
+        self.runtime = DeterministicAgentRuntime(base_dir=str(self.root), project_id=project_id)
         
         # Load agent YAML specification
         self.agent_config_path = self.root / f"agents/{self.agent_id.lower().replace('agent_', '')}.yaml"
@@ -110,7 +111,16 @@ class AgentReActExecutor:
 
         # Primary output artifact to evaluate
         primary_output_rel = outputs[0]
-        primary_output_path = self.root / primary_output_rel
+        if self.project_id:
+            try:
+                primary_output_path = self.runtime.resolve_path(primary_output_rel)
+            except FileNotFoundError:
+                primary_output_path = self.runtime.deliverables_dir / Path(primary_output_rel).name
+        else:
+            primary_output_path = self.root / primary_output_rel
+
+        # Pillar 1 Immutability Guard: Assert write target is not in protected engine directories
+        self.runtime.assert_write_target_allowed(primary_output_path)
 
         # Step 2-4: Self-Correction Loop
         attempt = 1

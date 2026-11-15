@@ -1,0 +1,25 @@
+{
+  "bundle_version": "1.0.0",
+  "feature_id": "FEAT-L4-AVP",
+  "agent_id": "AGENT_04_HUMAN_FACTORS_HMI",
+  "llm_lock": {
+    "checkpoint": "gemini-2.5-pro-002",
+    "temperature": 0.0,
+    "seed": 424242
+  },
+  "input_hashes": {
+    "profiles/l4_automated_valet_parking.yaml": "dbf06d27417941cd84ddd0d61d837b47f1fd0ad9cd5ae383acab24ae13e0eb76",
+    "artifacts/l4_avp/02_avp_odd.yaml": "dbf72c18f28097a8b9f83276490942396fa33ffb964f630f6443f481eb7c3e75"
+  },
+  "output_hashes": {
+    "artifacts/l4_avp/04_avp_hmi_state_matrix.csv": "277d91a320ce42385647d50bbb3761e8bf124cb7b74397080283b842507a8753"
+  },
+  "skills_invoked": [
+    "verify_hmi_state_machine"
+  ],
+  "compliance_attestation": {
+    "iso26262_traceability_enforced": true,
+    "iso21448_sotif_matrix_linked": true,
+    "human_signoff_status": "PENDING_HUMAN_SIGN_OFF"
+  }
+}

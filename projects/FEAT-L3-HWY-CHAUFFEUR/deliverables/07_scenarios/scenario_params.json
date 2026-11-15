@@ -1,0 +1,10 @@
+{
+  "scenario_id": "SAF_SOTIF_001_CutIn_LowSunGlare",
+  "description": "ISO 21448 SOTIF evaluation: Commercial 40-ton truck aggressive cut-in under low morning sun glare on Autobahn A9.",
+  "opendrive_map": "../maps/autobahn_a9_3lane.xodr",
+  "ego_speed_mps": 36.11,
+  "ttc_trigger_s": 2.2,
+  "rng_seed": 42,
+  "sun_elevation_deg": 4.5,
+  "precipitation_intensity": 0.35
+}

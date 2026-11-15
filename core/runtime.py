@@ -16,27 +16,76 @@ class DeterministicRuntimeError(Exception):
     """Raised when determinism or safety integrity is compromised."""
     pass
 
+class ToolchainImmutabilityViolationError(DeterministicRuntimeError):
+    """Raised when an agent or tool attempts to mutate core framework setup files."""
+    pass
+
 class DeterministicAgentRuntime:
+    # Protected core framework directories that running agents/tools CANNOT mutate
+    PROTECTED_TOOLCHAIN_DIRS = {
+        "agents",
+        "skills",
+        "schemas",
+        "knowledge_graphs",
+        "core",
+        "validators"
+    }
+
     def __init__(
         self,
         base_dir: Optional[str] = None,
+        project_id: Optional[str] = None,
         model_lock_rel: str = ".determinism/model_lock.json",
         vcr_cache_rel: str = ".determinism/tool_vcr_cache",
         bundle_dir_rel: str = ".determinism/execution_bundles"
     ):
-        self.base_dir = Path(base_dir) if base_dir else Path(__file__).resolve().parent.parent
+        self.base_dir = Path(base_dir).resolve() if base_dir else Path(__file__).resolve().parent.parent
+        self.project_id = project_id
+
+        if project_id:
+            self.project_dir = self.base_dir / "projects" / project_id
+            self.bundle_dir = self.project_dir / ".determinism/execution_bundles"
+            self.checkpoint_dir = self.project_dir / ".checkpoints"
+            self.deliverables_dir = self.project_dir / "deliverables"
+        else:
+            self.project_dir = self.base_dir
+            self.bundle_dir = self.base_dir / bundle_dir_rel
+            self.checkpoint_dir = self.base_dir / ".checkpoints"
+            self.deliverables_dir = self.base_dir / "artifacts"
+
         self.lock_file = self.base_dir / model_lock_rel
         self.vcr_dir = self.base_dir / vcr_cache_rel
-        self.bundle_dir = self.base_dir / bundle_dir_rel
         
         self.vcr_dir.mkdir(parents=True, exist_ok=True)
         self.bundle_dir.mkdir(parents=True, exist_ok=True)
+        self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
+        self.deliverables_dir.mkdir(parents=True, exist_ok=True)
         
         if not self.lock_file.exists():
             raise FileNotFoundError(f"Model lock file not found: {self.lock_file}")
             
         with open(self.lock_file, "r", encoding="utf-8") as f:
             self.model_lock = json.load(f)
+
+    def assert_write_target_allowed(self, target_path: Path):
+        """
+        Pillar 1 Immutability Enforcement:
+        Strictly prohibits agents from writing to or modifying core toolchain files.
+        Allowed write locations: projects/<feature_id>/, .determinism/, scratch/, or deliverables/.
+        """
+        resolved_target = target_path.resolve()
+        try:
+            rel_to_base = resolved_target.relative_to(self.base_dir)
+            top_level_part = rel_to_base.parts[0] if rel_to_base.parts else ""
+            if top_level_part in self.PROTECTED_TOOLCHAIN_DIRS:
+                raise ToolchainImmutabilityViolationError(
+                    f"ASPICE / ISO 26262 Tool Qualification Violation: "
+                    f"Agent attempted to write to protected core toolchain directory '{top_level_part}': {resolved_target}. "
+                    f"All deliverable outputs must be stored in projects/<feature_id>/deliverables/."
+                )
+        except ValueError:
+            # Target is outside base_dir entirely
+            pass
 
     @staticmethod
     def compute_sha256(filepath: Path) -> str:
@@ -51,13 +100,39 @@ class DeterministicAgentRuntime:
     def compute_string_sha256(text: str) -> str:
         return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
+    def resolve_path(self, p: str) -> Path:
+        """Resolves artifact path prioritizing feature project deliverables."""
+        path_obj = Path(p)
+        if path_obj.is_absolute() and path_obj.exists():
+            return path_obj
+        
+        # Check project deliverables first if project_id is set
+        if self.project_id:
+            # If path starts with artifacts/, look inside deliverables/
+            if str(p).replace("\\", "/").startswith("artifacts/"):
+                sub_rel = str(p).replace("\\", "/")[len("artifacts/"):]
+                cand = self.deliverables_dir / sub_rel
+                if cand.exists():
+                    return cand
+            cand_deliv = self.deliverables_dir / path_obj.name
+            if cand_deliv.exists():
+                return cand_deliv
+            cand_proj = self.project_dir / p
+            if cand_proj.exists():
+                return cand_proj
+
+        # Fallback to base_dir
+        base_cand = self.base_dir / p
+        if base_cand.exists():
+            return base_cand
+            
+        raise FileNotFoundError(f"Required artifact missing: {p}")
+
     def get_input_fingerprints(self, file_paths: List[str]) -> Dict[str, str]:
         """Returns map of normalized relative paths to their SHA-256."""
         fingerprints = {}
         for p in file_paths:
-            full_p = self.base_dir / p if not Path(p).is_absolute() else Path(p)
-            if not full_p.exists():
-                raise FileNotFoundError(f"Required input artifact missing: {p}")
+            full_p = self.resolve_path(p)
             rel_name = os.path.relpath(full_p, self.base_dir).replace("\\", "/")
             fingerprints[rel_name] = self.compute_sha256(full_p)
         return fingerprints

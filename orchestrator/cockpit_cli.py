@@ -30,12 +30,21 @@ from validators.pre_review_gatekeeper import run_gatekeeper
 console = Console()
 
 class CockpitManager:
-    def __init__(self, base_dir: Path = ROOT):
+    def __init__(self, base_dir: Path = ROOT, feature_id: str = "FEAT-L3-HWY-CHAUFFEUR"):
         self.root = base_dir
-        self.bundles_dir = self.root / ".determinism/execution_bundles"
+        self.feature_id = feature_id
+        project_dir = self.root / f"projects/{feature_id}"
+        if project_dir.exists():
+            self.bundles_dir = project_dir / ".determinism/execution_bundles"
+            self.checkpoints_dir = project_dir / ".checkpoints"
+            self.artifacts_dir = project_dir / "deliverables"
+            self.db_path = project_dir / "traceability.sqlite"
+        else:
+            self.bundles_dir = self.root / ".determinism/execution_bundles"
+            self.checkpoints_dir = self.root / ".checkpoints"
+            self.artifacts_dir = self.root / "artifacts"
+            self.db_path = self.root / "knowledge_graphs/kg5_traceability.sqlite"
         self.agents_dir = self.root / "agents"
-        self.artifacts_dir = self.root / "artifacts"
-        self.db_path = self.root / "knowledge_graphs/kg5_traceability.sqlite"
 
     def render_overview(self, feature_id: str = "FEAT-L3-HWY-CHAUFFEUR"):
         console.print(Panel(
@@ -167,7 +176,7 @@ def main():
     sign_cmd.add_argument("--feature-id", default="FEAT-L3-HWY-CHAUFFEUR")
 
     args = parser.parse_args()
-    mgr = CockpitManager()
+    mgr = CockpitManager(feature_id=args.feature_id)
 
     if args.subcommand == "status":
         mgr.render_overview(args.feature_id)

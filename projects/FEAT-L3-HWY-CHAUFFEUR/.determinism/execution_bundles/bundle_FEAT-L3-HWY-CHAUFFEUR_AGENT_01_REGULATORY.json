@@ -1,0 +1,26 @@
+{
+  "bundle_version": "1.0.0",
+  "feature_id": "FEAT-L3-HWY-CHAUFFEUR",
+  "agent_id": "AGENT_01_REGULATORY",
+  "llm_lock": {
+    "checkpoint": "gemini-2.5-pro-002",
+    "temperature": 0.0,
+    "seed": 424242
+  },
+  "input_hashes": {
+    "profiles/feature_profile.yaml": "746d26596e5081fc4ce46cfebdd500a8f6e489dd8403b162e6cc634086de7b5f"
+  },
+  "output_hashes": {
+    "projects/FEAT-L3-HWY-CHAUFFEUR/deliverables/01_compliance_matrix.csv": "1b03ecf0a6b40681161e39d341504da79408712bba1cb03fe2a80c0d7e868e0e",
+    "projects/FEAT-L3-HWY-CHAUFFEUR/deliverables/01_legal_brief.md": "504fc0078e6095ca692d39a2c5edd588f0b19c51d4d52f001cfc79a8ec97b660"
+  },
+  "skills_invoked": [
+    "query_regulatory_kg",
+    "validate_traceability"
+  ],
+  "compliance_attestation": {
+    "iso26262_traceability_enforced": true,
+    "iso21448_sotif_matrix_linked": true,
+    "human_signoff_status": "PENDING_HUMAN_SIGN_OFF"
+  }
+}
