@@ -8,6 +8,7 @@ Performs kinematic physics checks (deceleration limits, lateral acceleration env
 import sys
 import json
 import math
+import datetime
 from pathlib import Path
 from typing import Dict, Any
 
@@ -151,7 +152,7 @@ def generate_openscenario(params: Dict[str, Any], output_path: Path) -> Dict[str
     storyboard = xosc.StoryBoard(init)
     storyboard.add_story(story)
 
-    # Create full Scenario using scenariogeneration
+    # Create full Scenario using scenariogeneration with fixed deterministic creation date
     scenario = xosc.Scenario(
         name=scenario_id,
         author="Agent_07_Scenario_Sim_Orch",
@@ -160,7 +161,8 @@ def generate_openscenario(params: Dict[str, Any], output_path: Path) -> Dict[str
         storyboard=storyboard,
         roadnetwork=road,
         catalog=catalogs,
-        osc_minor_version=2
+        osc_minor_version=2,
+        creation_date=datetime.datetime(2026, 11, 15, 0, 0, 0)
     )
 
     output_path.parent.mkdir(parents=True, exist_ok=True)

@@ -3,6 +3,7 @@ name: "Regulatory & Legal Homologation Agent"
 phase: "Phase 1: Legal & Type-Approval Baseline"
 role: "Principal Automotive Homologation & Legal Compliance Engineer"
 pinned_knowledge_graphs:
+  - "knowledge_graphs/kg0_canonical_terminology.json"
   - "knowledge_graphs/kg1_regulatory.json"
   - "knowledge_graphs/kg5_traceability.sqlite"
 skills:

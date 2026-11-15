@@ -1,67 +1,156 @@
 {
   "graph_id": "KG2_ODD_TAXONOMY",
-  "version": "1.0.0",
-  "standard_alignment": "ASAM OpenODD 1.0",
+  "version": "2.0.0",
+  "description": "Harmonized Operational Design Domain (ODD) taxonomy conforming to ISO 34503:2023, BSI PAS 1883:2020, and ASAM OpenODD 1.0.",
+  "governing_standards": [
+    "ISO 34503:2023",
+    "BSI PAS 1883:2020",
+    "ASAM OpenODD 1.0",
+    "UN Regulation No. 157 (ALKS)",
+    "UN Regulation No. 171 (DCAS)"
+  ],
   "taxonomy": {
-    "road_networks": [
-      {
-        "type": "MOTORWAY_AUTOBAHN",
-        "speed_range_kph": [0.0, 160.0],
-        "structural_barrier_required": true,
-        "opposing_traffic_isolated": true,
-        "lane_width_envelope_m": [3.25, 4.50],
-        "min_curve_radius_m": 250.0
-      },
-      {
-        "type": "URBAN_ARTERIAL",
-        "speed_range_kph": [0.0, 60.0],
-        "structural_barrier_required": false,
-        "opposing_traffic_isolated": false,
-        "lane_width_envelope_m": [2.75, 3.75],
-        "min_curve_radius_m": 45.0
-      },
-      {
-        "type": "PARKING_STRUCTURE_AVP",
-        "speed_range_kph": [0.0, 20.0],
-        "structural_barrier_required": false,
-        "opposing_traffic_isolated": false,
-        "lane_width_envelope_m": [2.50, 4.00],
-        "min_curve_radius_m": 5.0,
-        "gnss_denied": true
+    "scenery_attributes": {
+      "road_networks": [
+        {
+          "type": "MOTORWAY_AUTOBAHN",
+          "description": "Controlled-access dual-carriageway divided highway with grade-separated junctions and physical central barrier.",
+          "speed_range_kph": [0.0, 130.0],
+          "structural_barrier_required": true,
+          "opposing_traffic_isolated": true,
+          "pedestrian_access_prohibited": true,
+          "lane_width_envelope_m": [3.25, 4.50],
+          "min_curve_radius_m": 450.0,
+          "max_longitudinal_grade_percent": 6.0,
+          "surface_friction_mu_min": 0.65
+        },
+        {
+          "type": "RURAL_HIGHWAY_DIVIDED",
+          "description": "Multi-lane undivided or median-separated rural road with at-grade intersections.",
+          "speed_range_kph": [0.0, 100.0],
+          "structural_barrier_required": false,
+          "opposing_traffic_isolated": false,
+          "pedestrian_access_prohibited": false,
+          "lane_width_envelope_m": [3.00, 3.75],
+          "min_curve_radius_m": 200.0,
+          "max_longitudinal_grade_percent": 8.0,
+          "surface_friction_mu_min": 0.60
+        },
+        {
+          "type": "URBAN_ARTERIAL",
+          "description": "Urban thoroughfare with complex signalized intersections, crosswalks, and bike lanes.",
+          "speed_range_kph": [0.0, 50.0],
+          "structural_barrier_required": false,
+          "opposing_traffic_isolated": false,
+          "pedestrian_access_prohibited": false,
+          "lane_width_envelope_m": [2.75, 3.50],
+          "min_curve_radius_m": 45.0,
+          "max_longitudinal_grade_percent": 10.0,
+          "surface_friction_mu_min": 0.55
+        },
+        {
+          "type": "PARKING_STRUCTURE_AVP",
+          "description": "Enclosed or outdoor designated automated valet parking facility with controlled gate access.",
+          "speed_range_kph": [0.0, 20.0],
+          "structural_barrier_required": false,
+          "opposing_traffic_isolated": false,
+          "pedestrian_access_prohibited": false,
+          "lane_width_envelope_m": [2.50, 4.00],
+          "min_curve_radius_m": 5.0,
+          "max_longitudinal_grade_percent": 15.0,
+          "surface_friction_mu_min": 0.50,
+          "gnss_denied": true
+        }
+      ],
+      "road_markings": {
+        "required_contrast_ratio": 3.0,
+        "supported_markings": ["STANDARD_WHITE_DASHED", "STANDARD_WHITE_SOLID", "DOUBLE_SOLID_NO_CROSS"],
+        "degradation_threshold": "RETROREFLECTIVITY_RL_UNDER_100_MCD"
       }
-    ],
+    },
     "environmental_phenomena": [
       {
         "condition": "CLEAR_DAY",
         "precipitation_mm_per_hr": 0.0,
         "visibility_m": 1000.0,
-        "illumination_lux": 50000.0
+        "illumination_lux": 50000.0,
+        "ambient_temp_celsius_envelope": [-20.0, 45.0],
+        "sensor_degradation_factor": 0.0
+      },
+      {
+        "condition": "MODERATE_RAIN",
+        "precipitation_mm_per_hr": 10.0,
+        "visibility_m": 350.0,
+        "illumination_lux": 15000.0,
+        "spray_occlusion_factor": 0.15,
+        "road_friction_mu": 0.60
       },
       {
         "condition": "HEAVY_RAIN",
         "precipitation_mm_per_hr": 25.0,
         "visibility_m": 120.0,
-        "spray_occlusion_factor": 0.45
+        "illumination_lux": 5000.0,
+        "spray_occlusion_factor": 0.45,
+        "road_friction_mu": 0.45,
+        "sotif_trigger_id": "SOT_TRIG_TRUCK_SPRAY_03"
       },
       {
         "condition": "LOW_SUN_GLARE",
         "sun_elevation_deg": 3.5,
+        "azimuth_aligned_with_heading": true,
+        "illumination_lux": 95000.0,
         "camera_saturation_risk": true,
-        "sotif_trigger_id": "SOT_TRIGGER_SUN_GLARE_01"
+        "sotif_trigger_id": "SOT_TRIG_SUN_GLARE_01"
       },
       {
-        "condition": "FOG_DENSE",
+        "condition": "DENSE_FOG",
         "precipitation_mm_per_hr": 0.5,
         "visibility_m": 50.0,
-        "lidar_backscatter_risk": true
+        "illumination_lux": 2000.0,
+        "lidar_backscatter_risk": true,
+        "odd_boundary_action": "ISSUE_TRANSITION_DEMAND_OR_MRM"
       }
     ],
+    "dynamic_traffic_elements": {
+      "traffic_densities": ["FREE_FLOW_LOS_A", "CONGESTED_LOS_C", "STOP_AND_GO_LOS_E"],
+      "vulnerable_road_users": [
+        {"class": "PEDESTRIAN", "crossing_speed_kph": [2.0, 8.0]},
+        {"class": "CYCLIST", "travel_speed_kph": [10.0, 30.0]},
+        {"class": "EMERGENCY_VEHICLE", "priority_preemption_required": true}
+      ]
+    },
+    "connectivity_and_infrastructure": {
+      "gnss_requirements": {
+        "constellations": ["GPS_L1_L5", "GALILEO_E1_E5A"],
+        "max_hdop": 2.0,
+        "rtk_correction_latency_ms": 200,
+        "tunnel_dead_reckoning_retention_s": 60.0
+      },
+      "v2x_communication": {
+        "standard": "ETSI_ITS_G5_OR_3GPP_CV2X_PC5",
+        "max_latency_ms": 20.0,
+        "min_packet_delivery_ratio": 0.999
+      },
+      "digital_hd_map": {
+        "max_freshness_age_hours": 168.0,
+        "layer_requirements": ["LANE_GEOMETRY", "SPEED_LIMITS", "PERMANENT_RESTRICTIONS"]
+      }
+    },
+    "operational_dynamics_constraints": {
+      "max_lateral_acceleration_mps2": 3.0,
+      "max_lateral_jerk_mps3": 2.0,
+      "nominal_longitudinal_deceleration_mps2": 3.5,
+      "mrm_maximum_deceleration_mps2": 4.0,
+      "emergency_maneuver_max_deceleration_mps2": 8.5,
+      "transition_demand_minimum_lead_time_s": 10.0
+    },
     "geofence_exclusions": [
       "CONSTRUCTION_YELLOW_MARKINGS",
       "TOLL_BOOTHS",
       "UNMAPPED_TUNNELS",
       "EMERGENCY_CORRIDOR_RETTUNGSGASSE",
-      "PEDESTRIAN_SHARED_ZONES"
+      "PEDESTRIAN_SHARED_ZONES",
+      "ACTIVE_ACCIDENT_SITES"
     ]
   }
 }

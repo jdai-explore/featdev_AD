@@ -1,8 +1,35 @@
 {
   "graph_id": "KG1_REGULATORY_COMPLIANCE",
-  "version": "2026.1",
-  "description": "Unified legal, homologation and safety standards knowledge graph for EU, UNECE and German automated driving.",
+  "version": "2026.2.0",
+  "description": "Unified legal, homologation, functional safety, cybersecurity, and AI safety standards knowledge graph for international and national automated driving (L2 through L4).",
+  "governing_bodies": [
+    "UNECE (World Forum for Harmonization of Vehicle Regulations WP.29)",
+    "ISO (International Organization for Standardization)",
+    "SAE International",
+    "European Union (EU Parliament & Council)",
+    "Underwriters Laboratories (UL)",
+    "German Federal Ministry for Digital and Transport (BMDV)"
+  ],
   "regulations": [
+    {
+      "standard_id": "SAE_J3016_2021",
+      "full_title": "SAE J3016:2021 - Taxonomy and Definitions for Terms Related to Driving Automation Systems for On-Road Motor Vehicles",
+      "target_levels": ["L0", "L1", "L2", "L2_PLUS", "L3", "L4", "L5"],
+      "clauses": [
+        {
+          "clause_id": "SAE_J3016_DDT_Def",
+          "title": "Dynamic Driving Task (DDT) Operational & Tactical Boundary",
+          "requirement_summary": "System must formally delineate operational (steering, braking) and tactical (lane changes, gaps) DDT elements from strategic routing. Full DDT allocated to ADS for Levels 3-5.",
+          "mandatory_artifacts": ["Feature_Profile", "ODD_Specification"]
+        },
+        {
+          "clause_id": "SAE_J3016_Fallback_Roles",
+          "title": "DDT Fallback Allocation & Human Roles",
+          "requirement_summary": "At L2/L2+, driver retains continuous OEDR and fallback responsibility. At L3, fallback-ready user responds to transition demand within lead time; ADS performs fallback if user fails. At L4, ADS autonomously achieves minimal risk condition without human fallback.",
+          "mandatory_artifacts": ["HMI_State_Matrix", "MRM_Operational_State"]
+        }
+      ]
+    },
     {
       "standard_id": "UN_R171_DCAS",
       "full_title": "UNECE Regulation No. 171 - Uniform Provisions Concerning the Approval of Vehicles with Regard to Driver Control Assistance Systems (DCAS)",
@@ -49,7 +76,7 @@
     },
     {
       "standard_id": "ISO_26262_2018",
-      "full_title": "Road Vehicles - Functional Safety (Parts 3, 4, 5, 6)",
+      "full_title": "ISO 26262:2018 Road Vehicles - Functional Safety (Parts 1-12)",
       "target_levels": ["L1", "L2", "L2_PLUS", "L3", "L4"],
       "clauses": [
         {
@@ -63,12 +90,18 @@
           "title": "Technical Safety Concept & FTTI",
           "requirement_summary": "Fault Tolerant Time Interval (FTTI) definition and architectural redundancy allocation to prevent single points of failure.",
           "mandatory_artifacts": ["Technical_Safety_Concept", "ICD_Specification"]
+        },
+        {
+          "clause_id": "ISO26262_Part5_Part6",
+          "title": "Hardware Metrics & Software Unit Safety",
+          "requirement_summary": "Hardware single-point fault metric (SPFM >= 99% for ASIL D) and software static verification (MISRA-C, zero dynamic memory, recursion bounds).",
+          "mandatory_artifacts": ["FMEDA_Report", "MISRA_C_AST_Audit"]
         }
       ]
     },
     {
       "standard_id": "ISO_21448_2022",
-      "full_title": "Road Vehicles - Safety of the Intended Functionality (SOTIF)",
+      "full_title": "ISO 21448:2022 Road Vehicles - Safety of the Intended Functionality (SOTIF)",
       "target_levels": ["L2_PLUS", "L3", "L4"],
       "clauses": [
         {
@@ -76,12 +109,37 @@
           "title": "Evaluation of Functional Insufficiencies and Triggering Conditions",
           "requirement_summary": "Systematic cataloging of environmental and operational triggers (sun glare, weather, road markings, spray) that cause perception/actuation limits.",
           "mandatory_artifacts": ["SOTIF_Trigger_Matrix", "OpenSCENARIO_Test_Suite"]
+        },
+        {
+          "clause_id": "ISO21448_Clause10",
+          "title": "Validation of SOTIF Scenarios & Residual Risk",
+          "requirement_summary": "Quantitative scenario testing to verify that unknown unsafe scenarios (Area 3) are reduced to an acceptable residual risk level.",
+          "mandatory_artifacts": ["Simulation_Validation_Report", "Area3_Discovery_Log"]
+        }
+      ]
+    },
+    {
+      "standard_id": "ISO_SAE_21434_2021",
+      "full_title": "ISO/SAE 21434:2021 Road Vehicles - Cybersecurity Engineering",
+      "target_levels": ["L2", "L2_PLUS", "L3", "L4"],
+      "clauses": [
+        {
+          "clause_id": "ISO21434_Clause9",
+          "title": "Threat Analysis and Risk Assessment (TARA)",
+          "requirement_summary": "Asset identification, threat scenarios, attack paths, and attack feasibility rating to determine Cybersecurity Assurance Levels (CAL 1-4).",
+          "mandatory_artifacts": ["TARA_Spreadsheet", "Attack_Tree_Model"]
+        },
+        {
+          "clause_id": "ISO21434_Clause10",
+          "title": "Cybersecurity Concept & SecOC Cryptographic Controls",
+          "requirement_summary": "Allocation of cybersecurity requirements, secure boot, Hardware Security Module (HSM) keys, and message authentication (AUTOSAR SecOC CMAC).",
+          "mandatory_artifacts": ["Cybersecurity_Concept", "SecOC_Key_Spec"]
         }
       ]
     },
     {
       "standard_id": "ISO_PAS_8800_2024",
-      "full_title": "Road Vehicles - Safety and Artificial Intelligence",
+      "full_title": "ISO/PAS 8800:2024 Road Vehicles - Safety and Artificial Intelligence",
       "target_levels": ["L2_PLUS", "L3", "L4"],
       "clauses": [
         {
@@ -89,6 +147,70 @@
           "title": "AI Dataset Quality and Out-of-Distribution (OOD) Robustness",
           "requirement_summary": "Dataset balance, demographic/geographic representation, and neural network epistemic/aleatoric uncertainty quantification.",
           "mandatory_artifacts": ["Dataset_Coverage_Audit", "Model_Quantization_Spec"]
+        },
+        {
+          "clause_id": "ISO8800_Clause12",
+          "title": "AI Safety Life Cycle & Supervisory Gating",
+          "requirement_summary": "Runtime supervisory safety wrappers that detect high model uncertainty or OOD inputs and trigger deterministic fail-operational fallbacks.",
+          "mandatory_artifacts": ["AI_Supervisor_ICD", "OOD_Benchmark_Log"]
+        }
+      ]
+    },
+    {
+      "standard_id": "ISO_34503_2023",
+      "full_title": "ISO 34503:2023 Road Vehicles - Test Scenarios for Automated Driving Systems - Taxonomy for Operational Design Domain (ODD)",
+      "target_levels": ["L2", "L2_PLUS", "L3", "L4"],
+      "clauses": [
+        {
+          "clause_id": "ISO34503_ODD_Structure",
+          "title": "Hierarchical ODD Categorization Framework",
+          "requirement_summary": "Standardized hierarchical decomposition across Scenery (road geometry, markings, surfaces), Environmental conditions (weather, lighting), and Dynamic elements.",
+          "mandatory_artifacts": ["ODD_Specification", "ASAM_OpenODD_Spec"]
+        }
+      ]
+    },
+    {
+      "standard_id": "ISO_34502_2022",
+      "full_title": "ISO 34502:2022 Road Vehicles - Test Scenarios for Automated Driving Systems - Scenario-Based Safety Evaluation Framework",
+      "target_levels": ["L2_PLUS", "L3", "L4"],
+      "clauses": [
+        {
+          "clause_id": "ISO34502_Scenario_Decomposition",
+          "title": "Three-Tier Scenario Decomposition (Functional, Logical, Concrete)",
+          "requirement_summary": "Transformation of traffic safety concepts from qualitative Functional Scenarios, to parametric Logical Scenarios, down to executable Concrete Scenarios in OpenSCENARIO format.",
+          "mandatory_artifacts": ["Logical_Scenario_Matrix", "OpenSCENARIO_Test_Suite"]
+        }
+      ]
+    },
+    {
+      "standard_id": "UL_4600_2023",
+      "full_title": "ANSI/UL 4600:2023 Standard for Evaluation of Autonomous Products",
+      "target_levels": ["L3", "L4"],
+      "clauses": [
+        {
+          "clause_id": "UL4600_Safety_Case",
+          "title": "Goal Structuring Notation (GSN) Autonomous Safety Case",
+          "requirement_summary": "Structured evidentiary safety argument covering system dependability, non-human driver behaviors, operational edge cases, and field feedback mechanisms.",
+          "mandatory_artifacts": ["GSN_Safety_Case", "Edge_Case_Catalog"]
+        }
+      ]
+    },
+    {
+      "standard_id": "EU_AI_ACT_2024",
+      "full_title": "Regulation (EU) 2024/1689 of the European Parliament and of the Council (EU Artificial Intelligence Act)",
+      "target_levels": ["L2_PLUS", "L3", "L4"],
+      "clauses": [
+        {
+          "clause_id": "EU_AI_ACT_Art9_10",
+          "title": "Risk Management & High-Risk AI Data Governance",
+          "requirement_summary": "High-risk AI systems in vehicles must undergo continuous risk management, bias audits, and representativeness validation on training and validation sets.",
+          "mandatory_artifacts": ["AI_Risk_Assessment", "Data_Governance_Audit"]
+        },
+        {
+          "clause_id": "EU_AI_ACT_Art14_15",
+          "title": "Human Oversight, Robustness & Cybersecurity",
+          "requirement_summary": "Appropriate human-machine interface controls enabling human oversight, alongside proven resilience against adversarial attacks and data drift.",
+          "mandatory_artifacts": ["Human_Oversight_Manual", "AI_Adversarial_Robustness_Report"]
         }
       ]
     },

@@ -1,0 +1,288 @@
+{
+  "graph_id": "KG0_CANONICAL_TERMINOLOGY_REGISTRY",
+  "version": "1.0.0",
+  "description": "Authoritative non-conflicting ADAS/AD terminology dictionary harmonizing ISO, SAE, UNECE, BSI, and German national standards.",
+  "governing_standards": [
+    "SAE J3016:2021",
+    "ISO 26262:2018",
+    "ISO 21448:2022",
+    "ISO/SAE 21434:2021",
+    "ISO/PAS 8800:2024",
+    "ISO 34501:2022",
+    "ISO 34502:2022",
+    "ISO 34503:2023",
+    "UL 4600:2023",
+    "UN Regulation No. 157 (ALKS)",
+    "UN Regulation No. 171 (DCAS)",
+    "UN Regulation No. 155 (CSMS)",
+    "UN Regulation No. 156 (SUMS)",
+    "German StVG § 1a-1f & AFGBV"
+  ],
+  "terms": [
+    {
+      "term_id": "TERM_DDT",
+      "canonical_name": "Dynamic Driving Task (DDT)",
+      "domain": "AUTOMATION_SYSTEMS",
+      "governing_standard": "SAE J3016:2021 Clause 3.13",
+      "definition": "All of the real-time operational and tactical functions required to operate a vehicle in on-road traffic, excluding strategic functions such as trip scheduling and selection of destinations.",
+      "sub_elements": [
+        "Lateral vehicle motion control (steering)",
+        "Longitudinal vehicle motion control (acceleration and braking)",
+        "Object and Event Detection and Response (OEDR)",
+        "Maneuver planning and execution",
+        "Signaling and communication (lighting, horn, gestures)"
+      ],
+      "forbidden_conflicting_terms": ["Driving task including navigation", "Autonomous driving (without specifying DDT scope)"],
+      "usage_rule": "Strategic navigation is strictly excluded from DDT."
+    },
+    {
+      "term_id": "TERM_ODD",
+      "canonical_name": "Operational Design Domain (ODD)",
+      "domain": "AUTOMATION_SYSTEMS",
+      "governing_standard": "SAE J3016:2021 Clause 3.22 / ISO 34503:2023",
+      "definition": "Operating conditions under which a given driving automation system or feature thereof is specifically designed to function, including, but not limited to, environmental, geographical, and time-of-day restrictions, and/or the requisite presence or absence of certain traffic or roadway characteristics.",
+      "sub_elements": [
+        "Scenery (roadway types, geometry, markings)",
+        "Environmental conditions (weather, illumination, particulate)",
+        "Dynamic elements (traffic density, VRU types)",
+        "Connectivity & Infrastructure (GNSS, cellular, V2X, digital map)"
+      ],
+      "forbidden_conflicting_terms": ["Operating range", "Operational envelope (ambiguous)"],
+      "usage_rule": "Every automated feature must have a formally bounded, machine-verifiable ODD specification."
+    },
+    {
+      "term_id": "TERM_OEDR",
+      "canonical_name": "Object and Event Detection and Response (OEDR)",
+      "domain": "AUTOMATION_SYSTEMS",
+      "governing_standard": "SAE J3016:2021 Clause 3.20",
+      "definition": "The subtasks of the DDT that include monitoring the driving environment (detecting, recognizing, and classifying objects and events and preparing to respond as needed) and executing an appropriate response to such objects and events.",
+      "sub_elements": [
+        "Perception sensing (cameras, radars, LiDARs, ultrasonics)",
+        "Sensor fusion & object tracking",
+        "Trajectory prediction & collision hazard detection",
+        "Tactical motion reaction"
+      ],
+      "forbidden_conflicting_terms": ["Environment sensing (too vague)"],
+      "usage_rule": "OEDR is a mandatory subtask of the DDT allocated to driver (L0-L2) or ADS (L3-L5)."
+    },
+    {
+      "term_id": "TERM_DDT_FALLBACK",
+      "canonical_name": "DDT Fallback",
+      "domain": "SAFETY_OPERATION",
+      "governing_standard": "SAE J3016:2021 Clause 3.14",
+      "definition": "The response by the user to either perform the DDT or achieve a minimal risk condition after occurrence of a DDT performance-relevant system failure(s) or upon operational design domain (ODD) exit, or the response by an ADS to achieve a minimal risk condition.",
+      "sub_elements": [
+        "Driver takeover response (L3)",
+        "ADS autonomous fallback response (L3/L4)"
+      ],
+      "forbidden_conflicting_terms": ["Emergency takeover (ambiguous)"],
+      "usage_rule": "DDT Fallback describes the transition process; the final stable state is the Minimal Risk Condition."
+    },
+    {
+      "term_id": "TERM_TOR",
+      "canonical_name": "Transition Demand (TD / TOR)",
+      "domain": "HUMAN_FACTORS_HMI",
+      "governing_standard": "UN Regulation No. 157 Para 2.7 / SAE J3016",
+      "definition": "An optical, acoustic, and haptic warning given by an ADS to the fallback-ready user requiring them to resume manual control of the dynamic driving task within a specified lead time (minimum 10.0 seconds under UN R157).",
+      "sub_elements": [
+        "Cascading multi-modal alert (visual, audible, haptic)",
+        "Minimum lead time countdown",
+        "Driver readiness verification via DMS"
+      ],
+      "forbidden_conflicting_terms": ["Takeover request (informal)", "Driver alert (too generic)"],
+      "usage_rule": "Transition Demand applies exclusively to Level 3 ADS. Level 4 systems do not issue transition demands to passengers."
+    },
+    {
+      "term_id": "TERM_MRM",
+      "canonical_name": "Minimum Risk Maneuver (MRM)",
+      "domain": "SAFETY_OPERATION",
+      "governing_standard": "UN Regulation No. 157 Para 2.8 / ISO 26262 Part 1",
+      "definition": "A procedure aimed at minimizing risks in the event of severe system failure or if the fallback-ready user does not resume manual control after a transition demand, performed by the system to automatically bring the vehicle to a standstill in a minimal risk condition.",
+      "sub_elements": [
+        "Controlled deceleration within lane (up to 4.0 m/s^2)",
+        "Coordinated lane change to hard shoulder (if equipped and clear)",
+        "Activation of hazard warning lights",
+        "Post-stop parking brake clamp and door unlock"
+      ],
+      "forbidden_conflicting_terms": ["Panic brake", "Emergency shutdown"],
+      "usage_rule": "MRM is a tactical trajectory maneuver aimed at reaching the MRC. It is distinct from an Emergency Maneuver."
+    },
+    {
+      "term_id": "TERM_MRC",
+      "canonical_name": "Minimal Risk Condition (MRC)",
+      "domain": "SAFETY_OPERATION",
+      "governing_standard": "SAE J3016:2021 Clause 3.18 / ISO 26262",
+      "definition": "A stable, stopped condition to which a user or an ADS may bring a vehicle after DDT fallback in order to reduce the risk of a crash when a given trip cannot or should not be continued.",
+      "sub_elements": [
+        "Vehicle speed == 0.0 km/h",
+        "Electric Park Brake (EPB) mechanically locked",
+        "Hazard flashers activated",
+        "DSSAD incident record committed to non-volatile memory"
+      ],
+      "forbidden_conflicting_terms": ["Safe parking (informal)", "Dead stop"],
+      "usage_rule": "MRC is the ADS physical realization of the ISO 26262 'Safe State'."
+    },
+    {
+      "term_id": "TERM_EM",
+      "canonical_name": "Emergency Maneuver (EM)",
+      "domain": "SAFETY_OPERATION",
+      "governing_standard": "UN Regulation No. 157 Para 2.9",
+      "definition": "A maneuver performed by the system in case of an imminent collision risk with the purpose of avoiding or mitigating a collision (e.g. maximum emergency braking up to vehicle physical adhesion limits, or evasive steering).",
+      "sub_elements": [
+        "Autonomous Emergency Braking (AEB)",
+        "Evasive steering assist (AES)"
+      ],
+      "forbidden_conflicting_terms": ["MRM (MRM is for system failure or TOR timeout; EM is for imminent external crash avoidance)"],
+      "usage_rule": "Never conflate MRM with EM. MRM handles loss of operational capability; EM handles imminent crash physics."
+    },
+    {
+      "term_id": "TERM_FUSA_HAZARD",
+      "canonical_name": "Functional Safety Hazard",
+      "domain": "FUNCTIONAL_SAFETY",
+      "governing_standard": "ISO 26262-1:2018 Clause 3.75",
+      "definition": "Potential source of harm caused by malfunctioning behaviour of an item resulting from systematic or random hardware faults in the electrical and/or electronic (E/E) system.",
+      "sub_elements": [
+        "Item malfunction (actuator overfeed, loss of compute, sensor lock)",
+        "Operational scenario (speed, road context, traffic)",
+        "HARA parameters: Severity (S0-S3), Exposure (E0-E4), Controllability (C0-C3)",
+        "Automotive Safety Integrity Level (ASIL QM, A, B, C, D)"
+      ],
+      "forbidden_conflicting_terms": ["SOTIF hazard", "Cyber attack"],
+      "usage_rule": "ISO 26262 hazards are strictly limited to malfunctioning behaviour of the E/E system."
+    },
+    {
+      "term_id": "TERM_SOTIF_TRIGGER",
+      "canonical_name": "SOTIF Triggering Condition",
+      "domain": "SOTIF",
+      "governing_standard": "ISO 21448:2022 Clause 3.31",
+      "definition": "Specific operational situation or environmental condition that serves as an initiator for a functional insufficiency to lead to a hazardous event, without any E/E fault or malfunction in the item.",
+      "sub_elements": [
+        "Environmental phenomenon (low sun blooming, dense aerosol spray, heavy snow)",
+        "Infrastructure anomaly (misleading temporary road markings, missing signs)",
+        "Sensor/algorithm limitation (camera dynamic range, radar backscatter, out-of-distribution neural texture)",
+        "Reasonably foreseeable misuse by human operators"
+      ],
+      "forbidden_conflicting_terms": ["System failure", "Software bug"],
+      "usage_rule": "SOTIF assumes the hardware and software are functioning exactly according to their technical specification, but the performance is insufficient for the real-world scenario."
+    },
+    {
+      "term_id": "TERM_CYBER_THREAT",
+      "canonical_name": "Cybersecurity Threat Scenario",
+      "domain": "CYBERSECURITY",
+      "governing_standard": "ISO/SAE 21434:2021 Clause 3.1.41",
+      "definition": "Potential cause of compromise of cybersecurity properties (authenticity, integrity, confidentiality, availability) of an asset leading to damage scenarios for road users.",
+      "sub_elements": [
+        "Vulnerable asset (CAN bus, OTA gateway, camera serializer)",
+        "Threat agent & attack method (spoofing, tampering, replay, denial of service)",
+        "Attack feasibility rating (elapsed time, specialist expertise, equipment, knowledge)",
+        "Cybersecurity Assurance Level (CAL 1-4)"
+      ],
+      "forbidden_conflicting_terms": ["Malfunction", "Functional insufficiency"],
+      "usage_rule": "Cybersecurity threats represent intentional malicious attacks on vehicle assets."
+    },
+    {
+      "term_id": "TERM_AI_WEAKNESS",
+      "canonical_name": "AI Safety Weakness",
+      "domain": "AI_SAFETY",
+      "governing_standard": "ISO/PAS 8800:2024 Clause 3 / EU AI Act Regulation 2024/1689",
+      "definition": "Inherent limitation or degradation in an AI/ML model's inference performance resulting from training dataset bias, out-of-distribution inputs, epistemic/aleatoric uncertainty, or numeric quantization errors.",
+      "sub_elements": [
+        "Out-of-Distribution (OOD) perception vulnerability",
+        "Epistemic uncertainty (model ignorance)",
+        "Aleatoric uncertainty (stochastic sensor noise)",
+        "Quantization loss (FP32 to INT8 precision truncation)",
+        "Adversarial perturbations"
+      ],
+      "forbidden_conflicting_terms": ["Deterministic software defect", "Memory leak"],
+      "usage_rule": "AI weaknesses must be addressed via uncertainty quantification, OOD rejection heads, and safe classical supervisory fallbacks."
+    },
+    {
+      "term_id": "TERM_FTTI",
+      "canonical_name": "Fault Tolerant Time Interval (FTTI)",
+      "domain": "FUNCTIONAL_SAFETY",
+      "governing_standard": "ISO 26262-1:2018 Clause 3.61",
+      "definition": "Time-span in which a fault can be present in a system before a hazardous event occurs.",
+      "sub_elements": [
+        "Fault Detection Time (FDT)",
+        "Fault Reaction Time (FRT)",
+        "Fault Handling Time Interval (FHTI = FDT + FRT <= FTTI)"
+      ],
+      "forbidden_conflicting_terms": ["Latency (generic)", "Loop cycle time"],
+      "usage_rule": "System FHTI must be proven strictly less than or equal to FTTI under worst-case execution conditions."
+    },
+    {
+      "term_id": "TERM_EOTI",
+      "canonical_name": "Emergency Operation Time Interval (EOTI)",
+      "domain": "FUNCTIONAL_SAFETY",
+      "governing_standard": "ISO 26262-1:2018 Clause 3.44",
+      "definition": "Time-span in which the system can be operated safely under emergency operation conditions (fail-operational degraded mode) until reaching the safe state.",
+      "sub_elements": [
+        "Degraded control maintenance duration",
+        "Secondary power supply autonomy time",
+        "Safe pull-over trajectory execution window"
+      ],
+      "forbidden_conflicting_terms": ["Battery backup time"],
+      "usage_rule": "Level 3 and Level 4 systems must guarantee an EOTI (e.g. >= 15 seconds) to allow complete execution of the MRM to the MRC."
+    },
+    {
+      "term_id": "TERM_FAIL_OPERATIONAL",
+      "canonical_name": "Fail-Operational Architecture",
+      "domain": "SYSTEMS_EE",
+      "governing_standard": "ISO 26262-4:2018 / ISO 34503",
+      "definition": "System architectural capability that ensures continued dynamic driving task performance (without interruption or hazard) upon the occurrence of any single random hardware or power fault, for at least the duration of the EOTI.",
+      "sub_elements": [
+        "Dual-compute hot standby (e.g. Primary SoC + Lockstep MCU)",
+        "Redundant communication buses (TSN + CAN-FD)",
+        "Dual-winding actuators (EPS steering, dual-circuit braking)",
+        "Independent isolated power distribution networks"
+      ],
+      "forbidden_conflicting_terms": ["Fail-safe (fail-safe shuts down; fail-operational continues operating)"],
+      "usage_rule": "Fail-safe is prohibited for Level 3 / Level 4 highway or urban pilot features at speed; fail-operational is strictly required."
+    },
+    {
+      "term_id": "TERM_TECHNICAL_SUPERVISOR",
+      "canonical_name": "Technical Supervisor (Technische Aufsicht)",
+      "domain": "LEGAL_HOMOLOGATION",
+      "governing_standard": "German StVG § 1d / AFGBV",
+      "definition": "A natural person who can monitor and deactivate an autonomous motor vehicle (SAE Level 4) from a remote station during operation, authorize lane changes or route deviations for trapped vehicles, and initiate the minimal risk maneuver when necessary, without manual steering wheel or pedal actuation.",
+      "sub_elements": [
+        "Remote operational dispatch & monitoring",
+        "Teleoperation trajectory authorization (high-level waypoints)",
+        "Emergency remote stop command",
+        "Encrypted low-latency cellular V2X link"
+      ],
+      "forbidden_conflicting_terms": ["Remote driver (implies remote steering wheel joystick control)", "In-vehicle driver"],
+      "usage_rule": "The Technical Supervisor does not drive the vehicle; they supervise the autonomous system and release high-level driving maneuvers."
+    },
+    {
+      "term_id": "TERM_DSSAD",
+      "canonical_name": "Data Storage System for Automated Driving (DSSAD)",
+      "domain": "LEGAL_HOMOLOGATION",
+      "governing_standard": "UN Regulation No. 157 Para 7 / UN Regulation No. 160 (EDR)",
+      "definition": "An onboard crash-hardened, tamper-evident recording device that records timestamped interactions between the automated driving system and the driver or technical supervisor to establish whether the human or the ADS was in control during any safety-relevant event.",
+      "sub_elements": [
+        "Activation and deactivation timestamps",
+        "Transition demand initiation and driver takeover timestamps",
+        "Driver override timestamps",
+        "MRM and EM activation timestamps",
+        "Severe collision / fault indicators"
+      ],
+      "forbidden_conflicting_terms": ["Black box (informal)", "EDR (Event Data Recorder - EDR logs crash dynamics; DSSAD logs automation control status)"],
+      "usage_rule": "DSSAD data must be recorded with monotonic timestamps and retained in tamper-proof non-volatile storage for at least 180 days."
+    },
+    {
+      "term_id": "TERM_SCENARIO_LEVELS",
+      "canonical_name": "Scenario Hierarchy (Functional, Logical, Concrete)",
+      "domain": "VERIFICATION_SIMULATION",
+      "governing_standard": "ISO 34501:2022 / ISO 34502:2022",
+      "definition": "The formal three-tier decomposition for automotive verification scenarios: Functional Scenarios describe traffic entities and actions in natural language; Logical Scenarios define state-space parameter ranges with probability distributions; Concrete Scenarios define exact scalar values for deterministic execution.",
+      "sub_elements": [
+        "Functional Scenario: 'Ego follows lead vehicle while another vehicle cuts in.'",
+        "Logical Scenario: 'Cut-in distance d in [10, 30]m, delta_v in [-20, +20]km/h.'",
+        "Concrete Scenario: 'Cut-in distance d = 18.5m, delta_v = -8.2km/h (ASAM OpenSCENARIO 1.2 XML).'"
+      ],
+      "forbidden_conflicting_terms": ["Simulation script (too generic)"],
+      "usage_rule": "Traceability must link Functional Scenarios to Safety Goals / SOTIF Triggers, and Concrete Scenarios to validation pass/fail reports."
+    }
+  ]
+}

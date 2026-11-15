@@ -213,5 +213,35 @@ class TestADASAgenticFramework(unittest.TestCase):
         c_res = lint_embedded_c_code(str(c_file))
         self.assertEqual(c_res["status"], "PASS")
 
+    def test_17_canonical_terminology_and_kg_standards_integrity(self):
+        """Verifies KG0 terminology registry and harmonized standards coverage across KG1-KG4."""
+        # 1. Verify KG0 Terminology
+        kg0_file = self.root / "knowledge_graphs/kg0_canonical_terminology.json"
+        self.assertTrue(kg0_file.exists())
+        with open(kg0_file, "r", encoding="utf-8") as f:
+            kg0_data = json.load(f)
+        self.assertEqual(kg0_data["graph_id"], "KG0_CANONICAL_TERMINOLOGY_REGISTRY")
+        self.assertGreaterEqual(len(kg0_data["terms"]), 15)
+        self.assertIn("SAE J3016:2021", kg0_data["governing_standards"])
+        self.assertIn("ISO/SAE 21434:2021", kg0_data["governing_standards"])
+
+        # 2. Verify KG1 Regulatory Standards
+        kg1_file = self.root / "knowledge_graphs/kg1_regulatory.json"
+        with open(kg1_file, "r", encoding="utf-8") as f:
+            kg1_data = json.load(f)
+        std_ids = [r["standard_id"] for r in kg1_data["regulations"]]
+        self.assertIn("ISO_SAE_21434_2021", std_ids)
+        self.assertIn("ISO_34503_2023", std_ids)
+        self.assertIn("UL_4600_2023", std_ids)
+        self.assertIn("EU_AI_ACT_2024", std_ids)
+
+        # 3. Verify KG4 Cybersecurity Threats & SOTIF
+        kg4_file = self.root / "knowledge_graphs/kg4_hazard_sotif_catalog.json"
+        with open(kg4_file, "r", encoding="utf-8") as f:
+            kg4_data = json.load(f)
+        self.assertIn("cybersecurity_threat_scenarios", kg4_data)
+        self.assertGreaterEqual(len(kg4_data["cybersecurity_threat_scenarios"]), 3)
+        self.assertGreaterEqual(len(kg4_data["functional_safety_hazards"]), 5)
+
 if __name__ == "__main__":
     unittest.main()

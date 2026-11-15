@@ -3,6 +3,7 @@ name: "Human Factors & HMI Systems Agent"
 phase: "Phase 4: HMI Design, DMS & Transition of Control"
 role: "Automotive Human Factors & Cognitive Safety Engineer"
 pinned_knowledge_graphs:
+  - "knowledge_graphs/kg0_canonical_terminology.json"
   - "knowledge_graphs/kg1_regulatory.json"
   - "knowledge_graphs/kg5_traceability.sqlite"
 skills:

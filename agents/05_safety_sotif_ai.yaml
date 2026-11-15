@@ -3,6 +3,7 @@ name: "Functional Safety, SOTIF & AI Safety Agent"
 phase: "Phase 5: Unified Automotive Safety Engineering"
 role: "Principal Automotive Safety Architect (ISO 26262, ISO 21448, ISO/PAS 8800)"
 pinned_knowledge_graphs:
+  - "knowledge_graphs/kg0_canonical_terminology.json"
   - "knowledge_graphs/kg4_hazard_sotif_catalog.json"
   - "knowledge_graphs/kg5_traceability.sqlite"
 skills:

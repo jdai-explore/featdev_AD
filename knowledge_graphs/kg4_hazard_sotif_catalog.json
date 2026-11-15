@@ -1,7 +1,14 @@
 {
   "graph_id": "KG4_HAZARD_SOTIF_CATALOG",
-  "version": "1.5.0",
-  "description": "Hazard, SOTIF Triggering Conditions and ISO/PAS 8800 AI Weaknesses Catalog.",
+  "version": "2.0.0",
+  "description": "Unified Hazard (ISO 26262), SOTIF Triggering Conditions (ISO 21448), Cybersecurity Threats (ISO/SAE 21434), and AI Weaknesses (ISO/PAS 8800 / EU AI Act) Catalog.",
+  "governing_standards": [
+    "ISO 26262:2018 (Part 3 HARA)",
+    "ISO 21448:2022 (SOTIF Clauses 8, 10)",
+    "ISO/SAE 21434:2021 (Clause 9 TARA)",
+    "ISO/PAS 8800:2024 (AI Safety)",
+    "Regulation (EU) 2024/1689 (EU AI Act)"
+  ],
   "functional_safety_hazards": [
     {
       "hazard_id": "HAZ_LAT_OVERFEED_01",
@@ -35,6 +42,28 @@
       "asil": "ASIL_C",
       "safety_goal": "Prevent deceleration exceeding 2.0 m/s2 in the absence of valid collision target.",
       "ftti_ms": 100.0
+    },
+    {
+      "hazard_id": "HAZ_LONG_ACCEL_LOCK_04",
+      "malfunction": "Unintended sustained acceleration command / throttle stuck during traffic queue approach.",
+      "operational_scenario": "Vehicle approaching slow/stopped queue at 80 km/h on wet motorway.",
+      "severity": "S3",
+      "exposure": "E4",
+      "controllability": "C3",
+      "asil": "ASIL_D",
+      "safety_goal": "Inhibit unintended propulsion torque and force friction brake override with FTTI <= 50ms.",
+      "ftti_ms": 50.0
+    },
+    {
+      "hazard_id": "HAZ_HMI_SILENT_DISENGAGE_05",
+      "malfunction": "Silent disengagement of automated steering control without transition demand or acoustic warning.",
+      "operational_scenario": "Level 3 operation at 110 km/h while driver is lawfully engaged in non-driving secondary activity.",
+      "severity": "S3",
+      "exposure": "E4",
+      "controllability": "C3",
+      "asil": "ASIL_D",
+      "safety_goal": "Ensure multi-modal acoustic, optical, and haptic transition demand precedes any deactivation by at least 10s or maintain fail-operational trajectory.",
+      "ftti_ms": 100.0
     }
   ],
   "sotif_triggering_conditions": [
@@ -64,6 +93,56 @@
       "consequence": "Loss of target track or erroneous close cut-in prediction.",
       "quantitative_metric": "sensor_cross_correlation_index < 0.50",
       "simulation_test_mapping": "ASAM_SCENARIO_TRUCK_PLUME_SPRAY"
+    },
+    {
+      "trigger_id": "SOT_TRIG_RADAR_MULTIPATH_04",
+      "category": "RADAR_SCATTERING",
+      "phenomenon": "Radar electromagnetic multipath bouncing off metallic barrier and road surface.",
+      "functional_insufficiency": "Ghost stationary obstacle synthesized directly in ego lane path.",
+      "consequence": "False positive phantom braking trigger.",
+      "quantitative_metric": "radar_snr_drop_with_doppler_zero",
+      "simulation_test_mapping": "ASAM_SCENARIO_RADAR_MULTIPATH_BRIDGE"
+    },
+    {
+      "trigger_id": "SOT_TRIG_DIRTY_LENS_05",
+      "category": "SENSOR_DEPOSITION",
+      "phenomenon": "Partial salt crust or insect smear obscuring narrow-FOV front telephoto camera.",
+      "functional_insufficiency": "Reduced detection range for distant obstacles (150m down to 60m) without complete black-out fault.",
+      "consequence": "Late emergency braking upon high-speed closing target.",
+      "quantitative_metric": "lens_soiling_attenuation_ratio > 0.40",
+      "simulation_test_mapping": "ASAM_SCENARIO_SOILED_OPTICS_CUTIN"
+    }
+  ],
+  "cybersecurity_threat_scenarios": [
+    {
+      "threat_id": "CYBER_THREAT_CAN_SPOOF_01",
+      "asset": "ACTUATION_STEERING_TORQUE_COMMAND",
+      "vulnerability": "Unauthenticated frame broadcast on vehicle chassis bus.",
+      "threat_scenario": "Adversary injects forged CAN-FD frames commanding maximum lateral steering torque.",
+      "damage_scenario": "Immediate unintended lane departure and collision (Safety impact: S3, Financial: High).",
+      "attack_feasibility": "MODERATE",
+      "cal_level": "CAL_4",
+      "cybersecurity_goal": "Ensure authenticity, integrity, and anti-replay of steering commands via AUTOSAR SecOC AES-128 CMAC and monotonic Freshness Value."
+    },
+    {
+      "threat_id": "CYBER_THREAT_OTA_TAMPER_02",
+      "asset": "AD_FIRMWARE_BINARY_IMAGE",
+      "vulnerability": "Insecure download channel or compromised cloud repository.",
+      "threat_scenario": "Malicious actor replaces neural network weights or control binary with weaponized payload during OTA staging.",
+      "damage_scenario": "System-wide compromise of driving automation logic (Safety impact: S3, Operational: Fleetwide).",
+      "attack_feasibility": "HIGH",
+      "cal_level": "CAL_4",
+      "cybersecurity_goal": "Validate cryptographic signatures using Hardware Root of Trust and verify RXSWIN match in compliance with UN Regulation No. 156."
+    },
+    {
+      "threat_id": "CYBER_THREAT_GNSS_SPOOF_03",
+      "asset": "VEHICLE_GEOLOCATION_COORDINATES",
+      "vulnerability": "Unencrypted civilian GNSS RF signals (L1/L5).",
+      "threat_scenario": "Attacker broadcasts simulated GPS satellite signals to spoof vehicle into false ODD or geofence boundary.",
+      "damage_scenario": "System activates outside certified operational design domain.",
+      "attack_feasibility": "MODERATE",
+      "cal_level": "CAL_3",
+      "cybersecurity_goal": "Cross-validate GNSS position against visual odometry, wheel speed dead reckoning, and HD map feature localization."
     }
   ],
   "ai_safety_weaknesses_iso8800": [
@@ -78,6 +157,18 @@
       "layer": "TENSORRT_QUANTIZATION",
       "weakness": "Quantization loss on small bounding boxes (> 150m distant vehicles).",
       "mitigation": "Quantization-Aware Training (QAT) with loss penalty on distant high-speed vehicles."
+    },
+    {
+      "ai_weakness_id": "AI_WEAK_ADVERSARIAL_PATCH_03",
+      "layer": "TRAFFIC_SIGN_CLASSIFIER",
+      "weakness": "Adversarial high-contrast perturbation sticker causing speed limit 30 sign to be classified as 80.",
+      "mitigation": "Multi-frame temporal consistency filtering and digital map speed limit plausibility bounds."
+    },
+    {
+      "ai_weakness_id": "AI_WEAK_DEMOGRAPHIC_BIAS_04",
+      "layer": "VRU_DETECTOR_TRANSFORMER",
+      "weakness": "Underrepresentation of non-standard pedestrian postures (wheelchairs, motorized scooters, reflective safety vests).",
+      "mitigation": "Synthetic diffusion data augmentation and EU AI Act Article 10 balanced demographic data audit."
     }
   ]
 }

@@ -1,7 +1,16 @@
 {
   "graph_id": "KG3_VEHICLE_EE_TOPOLOGY",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "platform": "MODULAR_AUTOMOTIVE_E_E_L2_TO_L4",
+  "governing_standards": [
+    "ISO 26262:2018 (Parts 4, 5)",
+    "ISO/SAE 21434:2021",
+    "UN Regulation No. 155 (CSMS)",
+    "UN Regulation No. 157 (ALKS DSSAD)",
+    "IEEE 802.1Qbv / IEEE 802.1CB TSN",
+    "ISO 11898-1:2015 CAN-FD",
+    "AUTOSAR Classic & Adaptive Platforms"
+  ],
   "compute_subsystems": [
     {
       "ecu_id": "ECU_AD_PRIMARY",
@@ -10,7 +19,14 @@
       "os": "QNX_SAFETY_RTOS_PLUS_DRIVE_OS",
       "asil_capability": "ASIL_D_DECOMPOSED_B_D",
       "max_tdp_watts": 180.0,
-      "roles": ["PERCEPTION_CNN_TRANSFORMER", "WORLD_MODEL_PREDICTION", "MOTION_PLANNING"]
+      "roles": ["PERCEPTION_CNN_TRANSFORMER", "WORLD_MODEL_PREDICTION", "MOTION_PLANNING"],
+      "cybersecurity": {
+        "security_subsystem": "HARDWARE_SECURITY_MODULE_HSM",
+        "cryptographic_primitives": ["AES_256_GCM", "SHA_384", "ECC_SECP384R1"],
+        "secure_boot": "HARDWARE_ROOT_OF_TRUST_RSA_3072",
+        "key_storage": "TAMPER_RESISTANT_OTP_FUSE",
+        "intrusion_detection": "AUTOSAR_IDS_SENSOR_HOST_BASED"
+      }
     },
     {
       "ecu_id": "ECU_SAFETY_FAILOVER",
@@ -19,9 +35,39 @@
       "os": "AUTOSAR_CLASSIC_4.4",
       "asil_capability": "ASIL_D_SYSTEMIC",
       "max_tdp_watts": 15.0,
-      "roles": ["HOT_STANDBY_SUPERVISOR", "MRM_TRAJECTORY_EXECUTION", "DSSAD_FLUSH_CONTROLLER"]
+      "roles": ["HOT_STANDBY_SUPERVISOR", "MRM_TRAJECTORY_EXECUTION", "DSSAD_FLUSH_CONTROLLER"],
+      "heartbeat_timeout_ms": 10.0,
+      "cybersecurity": {
+        "security_subsystem": "CYBER_SECURITY_SATELLITE_CSS",
+        "cryptographic_primitives": ["AES_128_CMAC", "SHA_256"],
+        "secoc_acceleration": "HARDWARE_ACCELERATED_CMAC_VERIFICATION"
+      }
     }
   ],
+  "fail_operational_actuation": {
+    "steering": {
+      "type": "DUAL_WINDING_ELECTRIC_POWER_STEERING",
+      "redundancy": "DUAL_ECU_DUAL_POWER_SUPPLY",
+      "asil": "ASIL_D",
+      "max_takeover_delay_ms": 10.0,
+      "single_point_fault_tolerant": true
+    },
+    "braking": {
+      "type": "TWO_BOX_INTEGRATED_BRAKE_SYSTEM",
+      "primary": "INTEGRATED_BRAKE_CONTROLLER_IBC",
+      "secondary": "ELECTRONIC_STABILITY_PROGRAM_ESP_BACKUP",
+      "asil": "ASIL_D",
+      "backup_deceleration_mps2": 4.5,
+      "single_point_fault_tolerant": true
+    },
+    "power_supply": {
+      "architecture": "DUAL_ISOLATED_12V_POWER_NETWORKS",
+      "primary_source": "48V_TO_12V_DCDC_CONVERTER",
+      "secondary_source": "12V_LITHIUM_AUXILIARY_SAFETY_BATTERY",
+      "isolation_switch": "SMART_HIGH_SIDE_POWER_SWITCH_PROFET",
+      "eoti_autonomous_survival_seconds": 30.0
+    }
+  },
   "sensor_configurations": {
     "l2_plus_suite": {
       "cameras": [
@@ -46,6 +92,21 @@
       "lidars": [
         {"id": "LIDAR_FRONT_SOLID_STATE", "range_m": 200.0, "fov_deg": 120, "bus": "1000BASE_T1"}
       ]
+    },
+    "l4_avp_suite": {
+      "cameras": [
+        {"id": "CAM_SURROUND_4X_AVP", "resolution": "3MP", "fov_deg": 190, "bus": "GMSL2"}
+      ],
+      "ultrasonics": [
+        {"id": "USS_RING_12X", "range_m": 5.0, "fov_deg": 120, "bus": "CAN_FD_CHASSIS"}
+      ],
+      "lidars": [
+        {"id": "LIDAR_SHORT_RANGE_AVP", "range_m": 60.0, "fov_deg": 360, "bus": "1000BASE_T1"}
+      ],
+      "odometry": [
+        {"id": "WHEEL_SPEED_ENCODERS_4X", "resolution_pulses_per_rev": 96, "bus": "CAN_FD_CHASSIS"},
+        {"id": "IMU_6DOF_LOCKSTEP", "precision": "TACTICAL_GRADE", "bus": "SPI_SAFETY"}
+      ]
     }
   },
   "communication_interfaces": [
@@ -53,19 +114,24 @@
       "bus_name": "TSN_ETHERNET_BACKBONE",
       "protocol": "IEEE_802.1Qbv_TSN",
       "speed_mbps": 1000,
-      "max_allowed_bandwidth_utilization": 0.70
+      "max_allowed_bandwidth_utilization": 0.70,
+      "redundancy_mechanism": "IEEE_802.1CB_FRAME_REPLICATION",
+      "security_protocol": "IEEE_802.1AE_MACSEC"
     },
     {
       "bus_name": "CAN_FD_CHASSIS_SECURE",
       "protocol": "ISO_11898_1_2015",
       "speed_kbps": 2000,
-      "e2e_protection": "AUTOSAR_PROFILE_05_CRC16"
+      "arbitration_kbps": 500,
+      "e2e_protection": "AUTOSAR_PROFILE_05_CRC16",
+      "cybersecurity_protection": "AUTOSAR_SECOC_AES_128_CMAC"
     }
   ],
   "dssad_configuration": {
     "recorder_node": "ECU_SAFETY_FAILOVER",
     "storage_medium": "CRASH_HARDENED_FRAM_NVRAM",
     "sampling_resolution_ms": 10,
-    "un_r157_retention_days": 180
+    "un_r157_retention_days": 180,
+    "tamper_evident_mechanism": "CRYPTOGRAPHIC_HASH_CHAIN_HMAC_SHA256"
   }
 }

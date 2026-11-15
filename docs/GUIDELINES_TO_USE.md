@@ -46,10 +46,11 @@ flowchart TD
     A11 -.->|Calculates Ripple Effects| Trace
 ```
 
-### The 3 Core Rules:
+### The 4 Core Rules:
 1. **Never Run Unmonitored Autonomous Chains:** You invoke agents sequentially; each output must pass automated gatekeeper checks before you review and sign off.
-2. **Strict Bit-for-Bit Determinism:** All reasoning is pinned to local Knowledge Graphs (KG1–KG5), zero LLM temperature, fixed seeds, and SHA-256 context hashing.
+2. **Strict Bit-for-Bit Determinism:** All reasoning is pinned to local Knowledge Graphs (KG0–KG5), zero LLM temperature, fixed seeds, and SHA-256 context hashing.
 3. **Feature-Agnostic Operation:** The engine (agents, schemas, linters) never changes; to build a new feature, you simply stage a new `feature_profile.yaml`.
+4. **Strictly Follow Canonical Terminology:** All specifications, interfaces, and state machines must strictly adhere to [kg0_canonical_terminology.json](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/knowledge_graphs/kg0_canonical_terminology.json) to eliminate conflicts between ISO 26262 (Functional Safety), ISO 21448 (SOTIF), ISO/SAE 21434 (Cybersecurity), and SAE J3016 (DDT/ODD).
 
 ---
 

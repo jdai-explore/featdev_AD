@@ -3,6 +3,7 @@ name: "System & E/E Architecture Agent"
 phase: "Phase 6: E/E Platform, Redundancy & ICD Formalization"
 role: "Automotive E/E & Distributed Systems Architect"
 pinned_knowledge_graphs:
+  - "knowledge_graphs/kg0_canonical_terminology.json"
   - "knowledge_graphs/kg3_vehicle_platform.json"
   - "knowledge_graphs/kg5_traceability.sqlite"
 skills:

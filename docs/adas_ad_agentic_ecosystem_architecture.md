@@ -92,16 +92,17 @@ flowchart TD
 
 ---
 
-## 3. The 5 Shared Domain Knowledge Graphs
+## 3. The 6 Shared Domain Knowledge Graphs & Terminology Registry
 
-Rather than letting agents perform non-deterministic live web searches, the framework couples all reasoning to five local, git-tracked, version-controlled knowledge graphs:
+Rather than letting agents perform non-deterministic live web searches, the framework couples all reasoning to six local, git-tracked, version-controlled knowledge graphs:
 
 | Knowledge Graph | Format | Technical Scope & Regulatory Alignment | File Location |
 | :--- | :--- | :--- | :--- |
-| **KG1: Regulatory & Compliance** | JSON-LD | UN R157 (ALKS), UN R171 (DCAS), UN R155 (CSMS), UN R156 (SUMS), ISO 26262:2018, ISO 21448:2022, ISO/PAS 8800:2024, German StVG/AFGBV, EU AI Act. | [kg1_regulatory.json](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/knowledge_graphs/kg1_regulatory.json) |
-| **KG2: ODD & Roadway Taxonomy** | JSON | ASAM OpenODD 1.0 road geometries, lane boundaries, surface friction, weather envelopes, lighting/sun angles, dynamic traffic agents, and geofence exclusions. | [kg2_odd_taxonomy.json](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/knowledge_graphs/kg2_odd_taxonomy.json) |
-| **KG3: Vehicle Platform & E/E Topology** | JSON | Compute nodes (NVIDIA DRIVE Thor, Infineon AURIX TC4x lockstep), sensor suites (8MP GMSL2 cameras, 4D radars, solid-state LiDARs), TSN/CAN-FD topologies, DSSAD crash-hardened FRAM. | [kg3_vehicle_platform.json](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/knowledge_graphs/kg3_vehicle_platform.json) |
-| **KG4: Hazards & SOTIF Catalog** | JSON | Comprehensive catalog of systemic malfunctions (ISO 26262), environmental triggering conditions (ISO 21448: low sun glare, truck aerosol spray), and AI epistemic failure modes (ISO/PAS 8800). | [kg4_hazard_sotif_catalog.json](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/knowledge_graphs/kg4_hazard_sotif_catalog.json) |
+| **KG0: Canonical Terminology Registry** | JSON | Authoritative non-conflicting ADAS/AD definitions resolving DDT, ODD, OEDR, Transition Demand, MRM, MRC, Functional Safety Hazards, SOTIF Triggers, Cybersecurity Threats, AI Weaknesses, and Technical Supervisor. | [kg0_canonical_terminology.json](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/knowledge_graphs/kg0_canonical_terminology.json) |
+| **KG1: Regulatory & Compliance** | JSON / SQLite FTS5 | UN R157 (ALKS), UN R171 (DCAS), UN R155 (CSMS), UN R156 (SUMS), ISO 26262:2018, ISO 21448:2022, ISO/SAE 21434:2021, ISO/PAS 8800:2024, ISO 34501/34502/34503, UL 4600:2023, SAE J3016:2021, German StVG/AFGBV, EU AI Act (2024/1689). | [kg1_regulatory.json](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/knowledge_graphs/kg1_regulatory.json) |
+| **KG2: ODD & Roadway Taxonomy** | JSON | ISO 34503:2023, BSI PAS 1883:2020, and ASAM OpenODD 1.0 road scenery (lanes, friction $\mu$, curve radius), environmental envelopes (rain, spray, sun glare lux), dynamic traffic, connectivity, and geofence exclusions. | [kg2_odd_taxonomy.json](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/knowledge_graphs/kg2_odd_taxonomy.json) |
+| **KG3: Vehicle Platform & E/E Topology** | JSON | Fail-operational dual compute (NVIDIA DRIVE Thor + Infineon AURIX TC4x lockstep), Hardware Security Modules (HSM), dual-winding EPS steering, 2-box IBC braking, IEEE 802.1Qbv/CB TSN, CAN-FD SecOC, crash-hardened DSSAD. | [kg3_vehicle_platform.json](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/knowledge_graphs/kg3_vehicle_platform.json) |
+| **KG4: Hazards, SOTIF & Cyber Threat Catalog** | JSON | Comprehensive catalog of systemic malfunctions (ISO 26262 HARA), environmental triggering conditions (ISO 21448 SOTIF), cybersecurity threats & TARA goals (ISO/SAE 21434), and AI epistemic failure modes (ISO/PAS 8800 / EU AI Act). | [kg4_hazard_sotif_catalog.json](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/knowledge_graphs/kg4_hazard_sotif_catalog.json) |
 | **KG5: Bi-Directional Traceability Graph** | SQLite | Relational dependency database linking `REQ-*` $\to$ `ODD-*` $\to$ `AUTH-*` $\to$ `HMI-*` $\to$ `SAF-*` $\to$ `ARCH-*` $\to$ `SCEN-*` $\to$ `CODE-*` $\to$ `VAL-*`. Powers recursive ripple effect analysis. | [kg5_traceability.sqlite](file:///C:/Users/jayad/.gemini/antigravity/scratch/adas_ad_agentic_framework/knowledge_graphs/kg5_traceability.sqlite) |
 
 ---

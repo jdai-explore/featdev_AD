@@ -3,6 +3,7 @@ name: "Scenario & Simulation Orchestrator Agent"
 phase: "Phase 7: Scenario Generation, Virtual World & Neural Sim"
 role: "ADAS/AD Simulation & Virtual Verification Specialist"
 pinned_knowledge_graphs:
+  - "knowledge_graphs/kg0_canonical_terminology.json"
   - "knowledge_graphs/kg2_odd_taxonomy.json"
   - "knowledge_graphs/kg4_hazard_sotif_catalog.json"
 skills:

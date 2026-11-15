@@ -12,7 +12,7 @@
     "artifacts/05_safety_analysis.csv": "123bb80c9aae041a72c3d2936d1e202a415a6d9315c17979463d5cc821671c9f"
   },
   "output_hashes": {
-    "artifacts/07_scenarios/cutin_glare.xosc": "93930644ede9da6b4f43adf5c3728cd729242ef6a5be15d3c4bdca46b3713c53",
+    "artifacts/07_scenarios/cutin_glare.xosc": "dee2b4a14aa6c91d7d75163273eec0a0395a7332e9ee94423bb4bc228fd76283",
     "artifacts/07_simulation_plan.md": "d202b08ce64daaf207ddd290a4dbdb7ffc20c0de846ece24b47fd0527a8b804e"
   },
   "skills_invoked": [

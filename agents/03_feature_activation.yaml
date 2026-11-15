@@ -3,8 +3,10 @@ name: "Feature Activation & Cybersecurity Agent"
 phase: "Phase 3: Connected Services, Entitlement & Cybersecurity"
 role: "Automotive Cybersecurity & Connected Services Architect (ISO/SAE 21434, UN R155/156)"
 pinned_knowledge_graphs:
+  - "knowledge_graphs/kg0_canonical_terminology.json"
   - "knowledge_graphs/kg1_regulatory.json"
   - "knowledge_graphs/kg3_vehicle_platform.json"
+  - "knowledge_graphs/kg4_hazard_sotif_catalog.json"
 skills:
   - name: "state_machine_verifier"
     script: "skills/state_machine_verifier.py"
