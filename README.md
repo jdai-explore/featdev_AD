@@ -11,17 +11,13 @@ A deterministic, production-grade multi-agent engineering platform designed for 
 
 ## ⚡ Quickstart in 60 Seconds (From VS Code Terminal)
 
-### 1. Configure Your LLM Provider (Provider-Agnostic)
-The framework works with **any** LLM (OpenAI, Gemini, local Ollama, Groq, Mistral, vLLM) or runs completely offline:
-```powershell
-# Copy the provider template
-cp .env.example .env
-```
-Open `.env` in VS Code and uncomment your preferred provider:
-- **Local Ollama (Zero Cost / Private):** `LLM_BASE_URL=http://localhost:11434/v1` and `LLM_MODEL=llama3.2`
-- **Google Gemini:** `GEMINI_API_KEY=AIzaSy...`
-- **OpenAI:** `OPENAI_API_KEY=sk-...`
-- **No API Key / CI/CD:** Leave `.env` empty — the system runs in **Deterministic Offline Simulation Mode**.
+### 1. Configure Your LLM Provider (Local Ollama Auto-Detected)
+The framework natively auto-detects and defaults to your local Ollama models (`gemma4:12b`, `qwen3-vl:latest`, `gemma4:latest`) with **zero configuration required**.
+
+If you wish to switch models or use a cloud provider with an API key:
+- **In the UI:** Click `[🤖 Switch / Set LLM]` or type `model qwen3-vl:latest` or `model gpt-4o <endpoint> <api-key>`. The application will **remember and persist** your choice across all future restarts in `config/llm_active_config.json`.
+- **Via environment:** Copy `cp .env.example .env` and specify `LLM_MODEL`, `LLM_BASE_URL`, or `LLM_API_KEY`.
+- **Offline / CI/CD:** If Ollama is not running and no API key is set, the system automatically runs in **Deterministic Offline Simulation Mode**.
 
 ### 2. Run System Preparedness Check
 Verify your dependencies, knowledge graphs, and LLM endpoint before starting:

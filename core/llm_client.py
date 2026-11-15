@@ -2,27 +2,106 @@
 Universal Provider-Agnostic LLM Client for Autonomous ADAS/AD Agents
 Adheres strictly to the standard OpenAI-compatible API format (POST /v1/chat/completions).
 Compatible with:
+  - Local Ollama (auto-detects local models e.g. gemma4:12b, qwen3-vl:latest, gemma4:latest)
+  - Google Gemini (via OpenAI compatibility endpoint)
   - OpenAI (GPT-4o, GPT-4-turbo)
-  - Google Gemini (via OpenAI compatibility endpoint: https://generativelanguage.googleapis.com/v1beta/openai)
-  - Ollama (local open-weights models: Llama 3, DeepSeek-R1, Qwen 2.5)
-  - vLLM / LM Studio / LocalAI (on-prem inference servers)
-  - Groq / Mistral / Together / OpenRouter
+  - Groq / Mistral / Together / vLLM / LM Studio / OpenRouter
 
-Provides:
-  - Zero required external dependencies (uses standard library urllib.request with requests fallback)
-  - Tool calling / Function calling formatting and response parsing
-  - Deterministic offline replay fallback for air-gapped CI/CD verification
+Persistence & Precedence Order:
+  1. Explicit constructor arguments (if supplied)
+  2. Active process environment variables (LLM_API_KEY, LLM_MODEL, LLM_BASE_URL)
+  3. Local configuration file: config/llm_active_config.json (remembers user selections across restarts)
+  4. .env file in root
+  5. Automatic local Ollama discovery: defaults to gemma4:12b (or qwen3-vl / gemma4:latest) if Ollama is running
+  6. Deterministic offline simulation fallback (air-gapped CI/CD)
 """
 
 import os
 import json
 import urllib.request
 import urllib.error
+from pathlib import Path
 from typing import Dict, Any, List, Optional
+
+ROOT = Path(__file__).resolve().parent.parent
+CONFIG_FILE = ROOT / "config/llm_active_config.json"
+ENV_FILE = ROOT / ".env"
+
+PREFERRED_LOCAL_MODELS = [
+    "gemma4:12b",
+    "qwen3-vl:latest",
+    "gemma4:latest"
+]
 
 class LLMClientError(Exception):
     """Raised when an LLM inference call fails."""
     pass
+
+def load_persisted_config() -> Dict[str, Any]:
+    """Reads persisted user model configuration if saved."""
+    if CONFIG_FILE.exists():
+        try:
+            with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {}
+    return {}
+
+def save_persisted_config(model: str, base_url: str, api_key: str = "", provider: str = "custom") -> None:
+    """Saves user-configured LLM selection so it persists across UI & application restarts."""
+    CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "model": model,
+        "base_url": base_url,
+        "api_key": api_key,
+        "provider": provider
+    }
+    with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2)
+
+def detect_local_ollama() -> Optional[Dict[str, Any]]:
+    """Probes local Ollama instance on http://127.0.0.1:11434 and checks available models."""
+    ollama_url = "http://127.0.0.1:11434"
+    try:
+        req = urllib.request.Request(f"{ollama_url}/api/tags")
+        with urllib.request.urlopen(req, timeout=1.5) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            installed_names = [m.get("name") for m in data.get("models", [])]
+
+            # Match against preferred local models
+            chosen_model = None
+            for pref in PREFERRED_LOCAL_MODELS:
+                if pref in installed_names:
+                    chosen_model = pref
+                    break
+            if not chosen_model and installed_names:
+                chosen_model = installed_names[0]
+
+            if chosen_model:
+                return {
+                    "base_url": f"{ollama_url}/v1",
+                    "model": chosen_model,
+                    "available_models": installed_names,
+                    "provider": "ollama"
+                }
+    except Exception:
+        pass
+    return None
+
+def _read_env_file() -> Dict[str, str]:
+    """Lightweight .env reader without third-party dependencies."""
+    env_vars = {}
+    if ENV_FILE.exists():
+        try:
+            with open(ENV_FILE, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, v = line.split("=", 1)
+                        env_vars[k.strip()] = v.strip().strip("'\"")
+        except Exception:
+            pass
+    return env_vars
 
 class UniversalLLMClient:
     def __init__(
@@ -32,42 +111,101 @@ class UniversalLLMClient:
         model: Optional[str] = None,
         offline_fallback: bool = True
     ):
-        # 1. Resolve API Key: check specific env vars, then generic LLM_API_KEY
+        persisted = load_persisted_config()
+        file_env = _read_env_file()
+
+        # 1. Resolve API Key
         self.api_key = (
             api_key
             or os.environ.get("LLM_API_KEY")
             or os.environ.get("OPENAI_API_KEY")
             or os.environ.get("GEMINI_API_KEY")
             or os.environ.get("GOOGLE_API_KEY")
+            or persisted.get("api_key")
+            or file_env.get("LLM_API_KEY")
+            or file_env.get("OPENAI_API_KEY")
+            or file_env.get("GEMINI_API_KEY")
             or ""
         )
 
-        # 2. Resolve Base URL: default to OpenAI endpoint if OpenAI key, or Gemini if Gemini key
-        env_base = os.environ.get("LLM_BASE_URL") or os.environ.get("OPENAI_BASE_URL")
+        # 2. Check for local Ollama auto-detection if no explicit key/endpoint given
+        ollama_info = None
+        has_explicit_remote_key = bool(self.api_key) and not self.api_key.lower().startswith("ollama")
+
+        # 3. Resolve Base URL
+        env_base = (
+            os.environ.get("LLM_BASE_URL")
+            or os.environ.get("OPENAI_BASE_URL")
+            or file_env.get("LLM_BASE_URL")
+            or file_env.get("OPENAI_BASE_URL")
+        )
+
         if base_url:
             self.base_url = base_url.rstrip("/")
         elif env_base:
             self.base_url = env_base.rstrip("/")
-        elif os.environ.get("GEMINI_API_KEY") or (self.api_key.startswith("AIza") if self.api_key else False):
-            # Google Gemini OpenAI-compatible endpoint
+        elif persisted.get("base_url"):
+            self.base_url = persisted["base_url"].rstrip("/")
+        elif not has_explicit_remote_key:
+            # Check local Ollama
+            ollama_info = detect_local_ollama()
+            if ollama_info:
+                self.base_url = ollama_info["base_url"]
+            elif os.environ.get("OLLAMA_HOST"):
+                self.base_url = f"{os.environ.get('OLLAMA_HOST').rstrip('/')}/v1"
+            elif os.environ.get("GEMINI_API_KEY") or self.api_key.startswith("AIza"):
+                self.base_url = "https://generativelanguage.googleapis.com/v1beta/openai"
+            else:
+                self.base_url = "https://api.openai.com/v1"
+        elif os.environ.get("GEMINI_API_KEY") or self.api_key.startswith("AIza"):
             self.base_url = "https://generativelanguage.googleapis.com/v1beta/openai"
-        elif os.environ.get("OLLAMA_HOST"):
-            self.base_url = f"{os.environ.get('OLLAMA_HOST').rstrip('/')}/v1"
         else:
             self.base_url = "https://api.openai.com/v1"
 
-        # 3. Resolve Model Name — explicit args/env always win; fallback by provider
-        _model_env = os.environ.get("LLM_MODEL") or os.environ.get("OPENAI_MODEL")
+        # 4. Resolve Model Name
+        _model_env = os.environ.get("LLM_MODEL") or os.environ.get("OPENAI_MODEL") or file_env.get("LLM_MODEL")
         if model:
             self.model = model
         elif _model_env:
             self.model = _model_env
+        elif persisted.get("model"):
+            self.model = persisted["model"]
+        elif ollama_info:
+            self.model = ollama_info["model"]
+        elif "11434" in self.base_url or "ollama" in self.base_url:
+            self.model = "gemma4:12b"
         elif "generativelanguage.googleapis.com" in self.base_url:
             self.model = "gemini-2.5-pro"
         else:
-            self.model = "gpt-4o"
+            # If no key, default to local gemma4:12b preference
+            self.model = "gemma4:12b" if not self.api_key else "gpt-4o"
 
         self.offline_fallback = offline_fallback
+
+    def configure_and_persist(self, model: str, base_url: Optional[str] = None, api_key: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Dynamically updates model configuration and persists to config/llm_active_config.json.
+        """
+        self.model = model
+        if base_url:
+            self.base_url = base_url.rstrip("/")
+        if api_key is not None:
+            self.api_key = api_key
+
+        provider = "ollama" if ("11434" in self.base_url or not self.api_key) else "cloud_api"
+        save_persisted_config(
+            model=self.model,
+            base_url=self.base_url,
+            api_key=self.api_key,
+            provider=provider
+        )
+        return {
+            "status": "CONFIG_PERSISTED",
+            "model": self.model,
+            "base_url": self.base_url,
+            "api_key_configured": bool(self.api_key),
+            "provider": provider
+        }
 
     def chat_completion(
         self,
@@ -100,7 +238,8 @@ class UniversalLLMClient:
             payload["tool_choice"] = "auto"
 
         # Check if we have credentials or should run in offline fallback
-        if not self.api_key and not ("localhost" in self.base_url or "127.0.0.1" in self.base_url):
+        is_local = "localhost" in self.base_url or "127.0.0.1" in self.base_url
+        if not self.api_key and not is_local:
             if self.offline_fallback:
                 return self._synthesize_offline_response(messages, tools)
             raise LLMClientError(
@@ -110,13 +249,15 @@ class UniversalLLMClient:
 
         url = f"{self.base_url}/chat/completions"
         headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.api_key}"
+            "Content-Type": "application/json"
         }
 
-        # For Gemini OpenAI-compatible endpoint, standard Authorization Bearer is supported,
-        # but x-goog-api-key can also be passed
-        if "generativelanguage.googleapis.com" in self.base_url:
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+        elif is_local:
+            headers["Authorization"] = "Bearer ollama"
+
+        if "generativelanguage.googleapis.com" in self.base_url and self.api_key:
             headers["x-goog-api-key"] = self.api_key
 
         data_bytes = json.dumps(payload).encode("utf-8")
@@ -128,7 +269,7 @@ class UniversalLLMClient:
                 choice = resp_data.get("choices", [{}])[0]
                 message = choice.get("message", {})
                 return {
-                    "id": resp_data.get("id", "resp_mock"),
+                    "id": resp_data.get("id", "resp_live"),
                     "model": resp_data.get("model", self.model),
                     "content": message.get("content", ""),
                     "tool_calls": message.get("tool_calls")
@@ -176,6 +317,6 @@ class UniversalLLMClient:
         return {
             "id": "mock_completion_001",
             "model": f"{self.model}-offline-sim",
-            "content": f"[OFFLINE_SIMULATION] Processed instructions with zero-temperature determinism. Analysis complete.",
+            "content": f"[OFFLINE_SIMULATION: {self.model}] Processed instructions with zero-temperature determinism. Analysis complete.",
             "tool_calls": None
         }

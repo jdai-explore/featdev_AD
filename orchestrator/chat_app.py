@@ -177,6 +177,7 @@ Select an existing feature workspace or initialize a new project:
         cl.Action(name="action_status", label="📋 View Pipeline Status", payload={}),
         cl.Action(name="action_run_p1", label="▶️ Run Phase 1 (Regulatory)", payload={"agent": "AGENT_01_REGULATORY"}),
         cl.Action(name="action_run_all", label="🚀 Launch Full Pipeline (1-8)", payload={"start": 1, "end": 8}),
+        cl.Action(name="action_model_menu", label="🤖 Switch / Set LLM", payload={}),
         cl.Action(name="action_doctor", label="🩺 Re-check System Health", payload={}),
         cl.Action(name="action_new_project_prompt", label="✨ New Feature Project", payload={})
     ]
@@ -207,6 +208,22 @@ async def on_action_run_all(action: cl.Action):
 @cl.action_callback("action_doctor")
 async def on_action_doctor(action: cl.Action):
     await _send_doctor_report()
+    await action.remove()
+
+@cl.action_callback("action_model_menu")
+async def on_action_model_menu(action: cl.Action):
+    await _send_model_selection_menu()
+    await action.remove()
+
+@cl.action_callback("action_select_local_model")
+async def on_action_select_local_model(action: cl.Action):
+    chosen_model = action.payload.get("model", "gemma4:12b")
+    _llm.configure_and_persist(model=chosen_model, base_url="http://127.0.0.1:11434/v1")
+    await cl.Message(
+        content=f"✅ Switched LLM to local model **`{chosen_model}`** on `http://127.0.0.1:11434/v1`.\n\n"
+                f"Selection is saved and will be preserved automatically across restarts.",
+        author="Mission Control"
+    ).send()
     await action.remove()
 
 @cl.action_callback("action_new_project_prompt")
@@ -270,6 +287,14 @@ async def on_message(message: cl.Message):
         await _send_help(); return
     if t in ("doctor", "/doctor", "health", "check"):
         await _send_doctor_report(); return
+    if t in ("model", "/model", "llm", "/llm", "models"):
+        await _send_model_selection_menu(); return
+    if t.startswith("set model ") or t.startswith("model "):
+        parts = text.split(maxsplit=2)
+        model_name = parts[1] if len(parts) > 1 and parts[0] == "model" else (parts[2] if len(parts) > 2 else "")
+        if model_name:
+            await _set_custom_model_cli(model_name)
+            return
     if t in ("status", "/status", "pipeline"):
         await _send_status(project_id); return
     if t in ("projects", "/projects", "list projects"):
@@ -419,6 +444,56 @@ Active workspace switched to **`{fid}`**. You can now run:
         cl.Action(name="action_status", label="📋 View Workspace Status", payload={})
     ]
     await cl.Message(content=msg, author="Mission Control", actions=actions).send()
+
+async def _send_model_selection_menu():
+    from core.llm_client import detect_local_ollama, load_persisted_config
+    
+    ollama_info = detect_local_ollama()
+    persisted = load_persisted_config()
+    
+    actions = []
+    if ollama_info and ollama_info.get("available_models"):
+        for m in ollama_info["available_models"]:
+            is_active = (m == _llm.model)
+            label = f"⭐ {m} (Active)" if is_active else f"💻 Switch to {m}"
+            actions.append(cl.Action(
+                name="action_select_local_model",
+                label=label,
+                payload={"model": m}
+            ))
+
+    actions.append(cl.Action(name="action_doctor", label="🩺 Check Model Health", payload={}))
+
+    active_key_str = "Configured" if _llm.api_key else "None (Local Ollama / Deterministic Mode)"
+    md = f"""## 🤖 LLM Configuration & Model Selection
+- **Active Model:** `{_llm.model}`
+- **Endpoint URL:** `{_llm.base_url}`
+- **API Key Status:** `{active_key_str}`
+- **Persistence:** Config is saved to `config/llm_active_config.json` and remembered across sessions.
+
+### Quick Switch:
+Click any local model below or type in chat:
+- `model gemma4:12b`
+- `model qwen3-vl:latest`
+- `model gemma4:latest`
+- `model gpt-4o https://api.openai.com/v1 sk-...` (for cloud APIs)
+"""
+    await cl.Message(content=md, author="Mission Control", actions=actions).send()
+
+async def _set_custom_model_cli(command_str: str):
+    tokens = command_str.strip().split()
+    model = tokens[0]
+    base_url = tokens[1] if len(tokens) > 1 else None
+    api_key = tokens[2] if len(tokens) > 2 else ""
+
+    res = _llm.configure_and_persist(model=model, base_url=base_url, api_key=api_key)
+    await cl.Message(
+        content=f"✅ Model successfully switched to **`{res['model']}`**.\n"
+                f"- **Endpoint:** `{res['base_url']}`\n"
+                f"- **Provider Mode:** `{res['provider']}`\n"
+                f"- **Persistence:** Saved in `config/llm_active_config.json` (will automatically reload next start).",
+        author="Mission Control"
+    ).send()
 
 async def _send_doctor_report():
     report = run_preparedness_check(verbose=False)
